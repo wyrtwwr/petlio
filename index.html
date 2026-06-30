@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Address Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Neucha&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-container">
+      <a class="logo" href="/" aria-label="PETLIO">
+        <img src="assets/images/logo.png" alt="PETLIO">
+      </a>
+
+      <nav class="main-nav" aria-label="Главное меню">
+        <a href="#home">Главная</a>
+        <a href="#sizes">Размеры</a>
+        <a href="#constructor">Конструктор</a>
+        <a href="#order">Заказать</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="block1" id="home">
+      <div class="block1_txt">
+        <h1>ПОТЕРЯЛСЯ — <br>НЕ ЗНАЧИТ ПОТЕРЯН</h1>
+        <p>
+          Один маленький адресник может<br>
+          помочь вашему питомцу<br>
+          <span class="block1_mark">вернуться домой.</span>
+        </p>
+
+        <div class="btn_block1">
+          <a class="btn_primary" href="#constructor">
+            <span>Создать адресник</span>
+            <span class="paw" aria-hidden="true"><img src="assets/icons/paw.svg" alt=""></span>
+          </a>
+          <a class="btn_secondary" href="#order">
+            <span>Сделать заказ</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="block1_img">
+        <img src="assets/images/bl1.png" alt="Две чихуахуа с адресниками" class="dog_block1">
+      </div>
+    </section>
+
+    <section class="block2" id="why">
+      <div class="block2_all">
+        <img src="assets/images/block2_1.jpg" alt="Адресник в руке" class="block2_1">
+        <div class="block2_txt">
+          <h2>Почему это важно?</h2>
+          <p>Каждый год тысячи питомцев теряются. Адресник позволяет быстро связаться с вами и значительно увеличивает шанс возвращения домой.</p>
+        </div>
+        <img src="assets/images/dog_block2.png" alt="Собака с адресником" class="dogimg_block2">
+      </div>
+    </section>
+
+    <section class="block3" id="sizes">
+      <div class="block3_header">
+        <h2>Выберите размер</h2>
+        <button class="block3_arrow" type="button" aria-label="Назад">
+            <img class="arrow_1" src="assets/images/arrow1.png" alt="">
+        </button>
+      </div>
+
+      <div class="block3_cards">
+        <article class="size-card size-card--small" tabindex="0" role="button" aria-pressed="false">
+          <button class="size-card__wish" type="button" aria-label="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
+            </svg>
+          </button>
+
+          <div class="size-card__content">
+            <h3>МАЛЕНЬКИЙ</h3>
+            <p class="size-card__size">3 × 2 см</p>
+            <p class="size-card__label">Подходит для</p>
+            <ul class="size-card__list">
+              <li>чихуахуа</li>
+              <li>той - пуделя</li>
+              <li>шпица</li>
+              <li>йорка</li>
+            </ul>
+            <div class="size-card__price">1299 ₽</div>
+          </div>
+
+          <div class="size-card__media size-card__media--small">
+            <img src="assets/images/photo_adresnic.png" alt="Адресник маленького размера">
+          </div>
+        </article>
+
+        <article class="size-card size-card--medium" tabindex="0" role="button" aria-pressed="false">
+          <div class="size-card__badge">Самый популярный</div>
+
+          <button class="size-card__wish" type="button" aria-label="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
+            </svg>
+          </button>
+
+          <div class="size-card__content">
+            <h3>СРЕДНИЙ</h3>
+            <p class="size-card__size">4 × 2,5 см</p>
+            <p class="size-card__label">Подходит</p>
+            <ul class="size-card__list size-card__list--compact">
+              <li>большинству пород</li>
+            </ul>
+            <div class="size-card__price">1599 ₽</div>
+          </div>
+
+          <div class="size-card__media size-card__media--medium">
+            <img src="assets/images/photo_adresnic.png" alt="Адресник среднего размера">
+          </div>
+        </article>
+
+        <article class="size-card size-card--large" tabindex="0" role="button" aria-pressed="false">
+          <button class="size-card__wish" type="button" aria-label="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
+            </svg>
+          </button>
+
+          <div class="size-card__content">
+            <h3>БОЛЬШОЙ</h3>
+            <p class="size-card__size">5 × 3 см</p>
+            <p class="size-card__label">Подходит</p>
+            <ul class="size-card__list size-card__list--compact">
+              <li>крупным породам</li>
+            </ul>
+            <div class="size-card__price">1799 ₽</div>
+          </div>
+
+          <div class="size-card__media size-card__media--large">
+            <img src="assets/images/photo_adresnic.png" alt="Адресник большого размера">
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="block4">
+      <h1>Создай свой адресник за 5 шагов</h1>
+      <img src="assets/images/block4.png" alt="" class="shag">
+
+      <img src="assets/images/block4_mob.png" alt="" class="shag_mobile">
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__box">
+      <img src="assets/images/footer_dog.png" alt="Собака" class="footer__dog">
+
+      <div class="footer__cta">
+        <h2>
+          ПОДАРИ СВОЕМУ ПИТОМЦУ<br>
+          ЗАЩИТУ УЖЕ СЕГОДНЯ
+          <svg class="footer__heart" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
+          </svg>
+        </h2>
+
+        <div class="footer__action">
+          <a class="footer__button" href="#constructor">
+            <span>Создать адресник</span>
+            <img src="assets/icons/paw.svg" alt="">
+          </a>
+       <img class="footer__arrow" src="assets/images/arrow1.png" alt="">
+        </div>
+      </div>
+
+      <div class="footer__features">
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="assets/icons/f1.png" alt=""></span>
+          <p>Доставка<br>по всей России</p>
+        </div>
+
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="assets/icons/f2.png" alt=""></span>
+          <p>Индивидуальный<br>дизайн</p>
+        </div>
+
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="assets/icons/f3.png" alt=""></span>
+          <p>Доставка<br>по всей России</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__copyright">
+      <span>© 2026 Petfolio. Все права защищены.</span>
+      <img src="assets/icons/paw.svg" alt="">
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/animation.js"></script>
+  <script src="js/slider.js"></script>
+</body>
+</html>
