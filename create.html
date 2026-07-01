@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Address Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Neucha&family=PT+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style2.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-container">
+      <a class="logo" href="/" aria-label="PETLIO">
+        <img src="assets/images/logo.png" alt="PETLIO">
+      </a>
+
+      <nav class="main-nav" aria-label="Главное меню">
+        <a href="index.html">Главная</a>
+        <a href="#sizes">Размеры</a>
+        <a href="#constructor">Конструктор</a>
+        <a href="#order">Заказать</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="block1" id="home">
+      <div class="block1_txt">
+        <h1>ПРИМЕРЬТЕ ПАСПОРТ<br>ДЛЯ ВАШЕГО ПИТОМЦА</h1>
+        <p>
+          Загрузите фото питомца и посмотрите, как<br>
+          будет выглядеть адресник с его данными
+        </p>
+      </div>
+
+      <div class="block1_img">
+        <img src="assets/images/str2_dog1.PNG" alt="Две чихуахуа с адресниками" class="dog_block1">
+      </div>
+    </section>
+
+    <section class="constructor" id="constructor" aria-labelledby="constructor-title">
+      <div class="constructor__panel">
+        <form class="constructor-form" id="pet-form">
+          <div class="constructor-form__group">
+            <h2 class="constructor-form__title"><span>1.</span> ЗАГРУЗИТЕ ФОТО ПИТОМЦА</h2>
+
+            <label class="photo-drop" for="pet-photo">
+              <input id="pet-photo" type="file" accept="image/png,image/jpeg">
+              <span class="photo-drop__icon" aria-hidden="true"></span>
+              <span class="photo-drop__copy">
+                <strong>Нажмите, что бы загрузить<br>или перетащите фото сюда</strong>
+                <small>JPG, PNG, до 10МБ</small>
+              </span>
+            </label>
+          </div>
+
+          <div class="constructor-form__group constructor-form__group--data">
+            <h2 class="constructor-form__title"><span>2.</span> ЗАГРУЗИТЕ ДАННЫЕ</h2>
+
+            <label class="field field--wide">
+              <span>Имя питомца</span>
+              <input id="pet-name" type="text" placeholder="Например: Чиж" maxlength="22" autocomplete="off">
+            </label>
+
+            <div class="field-row">
+              <label class="field">
+                <span>Дата рождения:</span>
+                <input id="pet-birthday" type="text" placeholder="дд.мм.гггг" maxlength="10" autocomplete="off">
+              </label>
+
+              <label class="field">
+                <span>Порода:</span>
+                <input id="pet-breed" type="text" placeholder="Например: Пудель" maxlength="24" autocomplete="off">
+              </label>
+            </div>
+
+            <label class="field field--wide">
+              <span>Место жительства:</span>
+              <input id="pet-address" type="text" placeholder="Например: г. Москва, ул. Ленина, д. 67, (по желанию) кв 108" maxlength="62" autocomplete="off">
+            </label>
+
+            <label class="field field--wide">
+              <span>Телефон:</span>
+              <input id="pet-phone" type="tel" placeholder="+7 (___) ___ __ __, +7 (___) ___ __ __" maxlength="42" autocomplete="off">
+            </label>
+
+            <button class="passport-button" type="button" id="passport-button">
+              Посмотреть паспорт
+              <img src="assets/icons/paw.svg" alt="">
+            </button>
+          </div>
+        </form>
+
+        <div class="constructor-preview" id="sizes" aria-labelledby="constructor-title">
+          <span class="bubble bubble--one"></span>
+          <span class="bubble bubble--two"></span>
+          <span class="bubble bubble--three"></span>
+          <span class="bubble bubble--four"></span>
+          <span class="bubble bubble--five"></span>
+          <span class="bubble bubble--six"></span>
+          <span class="bubble bubble--seven"></span>
+
+          <h2 class="constructor-preview__title" id="constructor-title">ВАШ АДРЕСНИК</h2>
+          <div class="doodle doodle--rays" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="doodle doodle--star" aria-hidden="true"></div>
+
+          <div class="tag-preview" aria-live="polite">
+            <div class="tag-preview__content">
+              <img class="tag-preview__photo" id="preview-photo" alt="">
+              <div class="tag-preview__text">
+                <strong id="preview-name">Чиж</strong>
+                <span id="preview-birthday">дд.мм.гггг</span>
+                <span id="preview-breed">Пудель</span>
+                <small id="preview-address">г. Москва, ул. Ленина</small>
+                <small id="preview-phone">+7 (___) ___ __ __</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="size-picker" role="group" aria-label="Выберите размер адресника">
+            <h3>ВЫБЕРИТЕ РАЗМЕР:</h3>
+            <div class="size-picker__cards">
+              <button class="size-option" type="button" data-size="small" aria-pressed="false">
+                <span>Маленький</span>
+                <small>3 x 2 см</small>
+              </button>
+              <button class="size-option is-active" type="button" data-size="medium" aria-pressed="true">
+                <span>Средний</span>
+                <small>4 x 2,5 см</small>
+              </button>
+              <button class="size-option" type="button" data-size="large" aria-pressed="false">
+                <span>Большой</span>
+                <small>3 x 5 см</small>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block3_create">
+        <div class="block3_div">
+            <div class="txt_1_block3_create">
+                <h1>ПОЧЕМУ ЭТО ВАЖНО?</h1>
+                <picture>
+                  <source media="(max-width: 768px)" srcset="assets/images/create_block3_mobile.png">
+                  <img class="block3_image" src="assets/images/create_block3.png" alt="Преимущества адресника">
+                </picture>
+            </div>
+            <img class="block3_image2" src="assets/images/dog_create_block3.png" alt="">
+
+        </div>
+    </section>
+
+
+
+
+    
+  <footer class="footer">
+    <div class="footer__box">
+      <img src="assets/images/footer_dog.png" alt="Собака" class="footer__dog">
+
+      <div class="footer__cta">
+        <h2>
+          ПОДАРИ СВОЕМУ ПИТОМЦУ<br>
+          ЗАЩИТУ УЖЕ СЕГОДНЯ
+          <svg class="footer__heart" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
+          </svg>
+        </h2>
+
+        <div class="footer__action">
+          <a class="footer__button" href="#constructor">
+            <span>Создать адресник</span>
+            <img src="assets/icons/paw.svg" alt="">
+          </a>
+       <img class="footer__arrow" src="assets/images/arrow1.png" alt="">
+        </div>
+      </div>
+
+      <div class="footer__features">
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="assets/icons/f1.png" alt=""></span>
+          <p>Доставка<br>по всей России</p>
+        </div>
+
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="assets/icons/f2.png" alt=""></span>
+          <p>Индивидуальный<br>дизайн</p>
+        </div>
+
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="assets/icons/f3.png" alt=""></span>
+          <p>Доставка<br>по всей России</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__copyright">
+      <span>© 2026 Petfolio. Все права защищены.</span>
+      <img src="assets/icons/paw.svg" alt="">
+    </div>
+  </footer>
+
+  </main>
+
+  <script src="js/create.js"></script>
+</body>
+</html>
