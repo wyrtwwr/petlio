@@ -22,7 +22,8 @@
         <a href="index.html">Главная</a>
         <a href="#sizes">Размеры</a>
         <a href="#constructor">Конструктор</a>
-        <a href="#order">Заказать</a>
+        <a href="order.html">Заказать</a>
+        <a href="privacy.html">Политика</a>
       </nav>
     </div>
   </header>
@@ -89,7 +90,7 @@
             </label>
 
             <button class="passport-button" type="button" id="passport-button">
-              Посмотреть паспорт
+              Заказать паспорт
               <img src="assets/icons/paw.svg" alt="">
             </button>
           </div>
@@ -112,11 +113,11 @@
             <div class="tag-preview__content">
               <img class="tag-preview__photo" id="preview-photo" alt="">
               <div class="tag-preview__text">
-                <strong id="preview-name">Чиж</strong>
-                <span id="preview-birthday">дд.мм.гггг</span>
-                <span id="preview-breed">Пудель</span>
-                <small id="preview-address">г. Москва, ул. Ленина</small>
-                <small id="preview-phone">+7 (___) ___ __ __</small>
+                <strong class="tag-preview__line tag-preview__line--name" id="preview-name">Чиж</strong>
+                <span class="tag-preview__line tag-preview__line--birthday" id="preview-birthday">дд.мм.гггг</span>
+                <span class="tag-preview__line tag-preview__line--breed" id="preview-breed">Пудель</span>
+                <small class="tag-preview__line tag-preview__line--address" id="preview-address">г. Москва, ул. Ленина</small>
+                <small class="tag-preview__line tag-preview__line--phone" id="preview-phone">+7 (___) ___ __ __</small>
               </div>
             </div>
           </div>
@@ -140,6 +141,12 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="constructor-gallery" aria-label="Примеры адресников на питомцах">
+      <img src="assets/images/s1.jpg" alt="Адресник на питомце">
+      <img src="assets/images/s2.jpg" alt="Адресник на питомце">
+      <img src="assets/images/s3.jpg" alt="Адресник на питомце">
     </section>
 
     <section class="block3_create">
@@ -195,13 +202,14 @@
 
         <div class="footer__feature">
           <span class="footer__icon"><img src="assets/icons/f3.png" alt=""></span>
-          <p>Доставка<br>по всей России</p>
+          <p>Гарантия<br>качества</p>
         </div>
       </div>
     </div>
 
     <div class="footer__copyright">
       <span>© 2026 Petfolio. Все права защищены.</span>
+      <a href="privacy.html">Политика конфиденциальности</a>
       <img src="assets/icons/paw.svg" alt="">
     </div>
   </footer>

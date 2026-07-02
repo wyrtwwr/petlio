@@ -21,8 +21,9 @@
       <nav class="main-nav" aria-label="Главное меню">
         <a href="#home">Главная</a>
         <a href="#sizes">Размеры</a>
-        <a href="#constructor">Конструктор</a>
-        <a href="#order">Заказать</a>
+        <a href="create.html#constructor">Конструктор</a>
+        <a href="order.html">Заказать</a>
+        <a href="privacy.html">Политика</a>
       </nav>
     </div>
   </header>
@@ -42,7 +43,7 @@
             <span>Создать адресник</span>
             <span class="paw" aria-hidden="true"><img src="assets/icons/paw.svg" alt=""></span>
           </a>
-          <a class="btn_secondary" href="#order">
+          <a class="btn_secondary" href="order.html">
             <span>Сделать заказ</span>
           </a>
         </div>
@@ -73,7 +74,7 @@
       </div>
 
       <div class="block3_cards">
-        <article class="size-card size-card--small" tabindex="0" role="button" aria-pressed="false">
+        <article class="size-card size-card--small" tabindex="0" role="button" aria-pressed="false" data-size="small" data-size-title="Маленький" data-size-value="3 × 2 см" data-size-price="1299 ₽">
           <button class="size-card__wish" type="button" aria-label="В избранное">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
@@ -98,7 +99,7 @@
           </div>
         </article>
 
-        <article class="size-card size-card--medium" tabindex="0" role="button" aria-pressed="false">
+        <article class="size-card size-card--medium is-selected" tabindex="0" role="button" aria-pressed="true" data-size="medium" data-size-title="Средний" data-size-value="4 × 2,5 см" data-size-price="1599 ₽">
           <div class="size-card__badge">Самый популярный</div>
 
           <button class="size-card__wish" type="button" aria-label="В избранное">
@@ -122,7 +123,7 @@
           </div>
         </article>
 
-        <article class="size-card size-card--large" tabindex="0" role="button" aria-pressed="false">
+        <article class="size-card size-card--large" tabindex="0" role="button" aria-pressed="false" data-size="large" data-size-title="Большой" data-size-value="5 × 3 см" data-size-price="1799 ₽">
           <button class="size-card__wish" type="button" aria-label="В избранное">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
@@ -145,6 +146,15 @@
         </article>
       </div>
     </section>
+
+    <section class="pet-examples" aria-labelledby="pet-examples-title">
+      <h2 id="pet-examples-title">Примеры на питомцах</h2>
+      <div class="pet-examples__grid">
+        <img src="assets/images/s4.jpg" alt="Пример адресника на питомце">
+        <img src="assets/images/s5.jpg" alt="Пример адресника на питомце">
+      </div>
+    </section>
+
     <section class="block4">
       <h1>Создай свой адресник за 5 шагов</h1>
       <img src="assets/images/block4.png" alt="" class="shag">
@@ -167,7 +177,7 @@
         </h2>
 
         <div class="footer__action">
-          <a class="footer__button" href="#constructor">
+          <a class="footer__button" href="create.html">
             <span>Создать адресник</span>
             <img src="assets/icons/paw.svg" alt="">
           </a>
@@ -188,13 +198,14 @@
 
         <div class="footer__feature">
           <span class="footer__icon"><img src="assets/icons/f3.png" alt=""></span>
-          <p>Доставка<br>по всей России</p>
+          <p>Гарантия<br>качества</p>
         </div>
       </div>
     </div>
 
     <div class="footer__copyright">
       <span>© 2026 Petfolio. Все права защищены.</span>
+      <a href="privacy.html">Политика конфиденциальности</a>
       <img src="assets/icons/paw.svg" alt="">
     </div>
   </footer>

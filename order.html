@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Оформление заказа | PETLIO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Neucha&family=PT+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/order.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-container">
+      <a class="logo" href="index.html" aria-label="PETLIO">
+        <img src="assets/images/logo.png" alt="PETLIO">
+      </a>
+
+      <nav class="main-nav" aria-label="Главное меню">
+        <a href="index.html">Главная</a>
+        <a href="index.html#sizes">Размеры</a>
+        <a href="create.html#constructor">Конструктор</a>
+        <a href="order.html" aria-current="page">Заказать</a>
+        <a href="privacy.html">Политика</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="order-page">
+    <section class="order-hero" aria-labelledby="order-title">
+      <div>
+        <p class="order-eyebrow">Финальный шаг</p>
+        <h1 id="order-title">Оформление заказа</h1>
+      </div>
+      <a class="order-edit" href="create.html#constructor">Вернуться к конструктору</a>
+    </section>
+
+    <section class="order-layout">
+      <aside class="order-summary" aria-label="Данные адресника">
+        <h2>Ваш адресник</h2>
+
+        <dl class="summary-list">
+          <div>
+            <dt>Размер</dt>
+            <dd id="summary-size">Средний, 4 x 2,5 см</dd>
+          </div>
+          <div>
+            <dt>Имя питомца</dt>
+            <dd id="summary-pet-name">Не указано</dd>
+          </div>
+          <div>
+            <dt>Дата рождения</dt>
+            <dd id="summary-pet-birthday">Не указано</dd>
+          </div>
+          <div>
+            <dt>Порода</dt>
+            <dd id="summary-pet-breed">Не указано</dd>
+          </div>
+          <div>
+            <dt>Место жительства</dt>
+            <dd id="summary-pet-address">Не указано</dd>
+          </div>
+          <div>
+            <dt>Телефон на адреснике</dt>
+            <dd id="summary-pet-phone">Не указано</dd>
+          </div>
+        </dl>
+      </aside>
+
+      <form class="order-form" id="order-form">
+        <section class="order-card">
+          <h2>Данные получателя</h2>
+
+          <label class="order-field">
+            <span>Фамилия, имя и отчество полностью</span>
+            <input id="customer-name" name="customerName" type="text" autocomplete="name" required>
+          </label>
+
+          <label class="order-field">
+            <span>Точный адрес и почтовый индекс</span>
+            <textarea id="customer-address" name="customerAddress" rows="4" autocomplete="street-address" required></textarea>
+          </label>
+
+          <label class="order-field">
+            <span>Мобильный телефон для уведомлений</span>
+            <input id="customer-phone" name="customerPhone" type="tel" autocomplete="tel" required>
+          </label>
+        </section>
+
+        <section class="order-card">
+          <h2>Способ доставки</h2>
+
+          <div class="delivery-options">
+            <label class="delivery-option">
+              <input type="radio" name="deliveryType" value="standard" checked>
+              <span>
+                <strong>Обычная доставка</strong>
+                <small>Отправим на указанный адрес. Службу доставки выберите ниже.</small>
+              </span>
+            </label>
+
+            <label class="delivery-option">
+              <input type="radio" name="deliveryType" value="avito">
+              <span>
+                <strong>Заказать через Авито</strong>
+                <small>Можно оформить покупку и доставку на стороне Авито.</small>
+              </span>
+            </label>
+          </div>
+
+          <div class="delivery-services" id="delivery-services" aria-label="Служба доставки">
+            <label>
+              <input type="radio" name="deliveryService" value="Озон">
+              <span>Озон</span>
+            </label>
+            <label>
+              <input type="radio" name="deliveryService" value="Яндекс" checked>
+              <span>Яндекс</span>
+            </label>
+            <label>
+              <input type="radio" name="deliveryService" value="Почта России">
+              <span>Почта России</span>
+            </label>
+            <label>
+              <input type="radio" name="deliveryService" value="СДЭК">
+              <span>СДЭК</span>
+            </label>
+          </div>
+
+          <label class="order-field pickup-field" id="pickup-field">
+            <span>Адрес пункта выдачи</span>
+            <input id="pickup-address" name="pickupAddress" type="text" placeholder="Например: Озон, г. Москва, ул. Ленина, 10" required>
+          </label>
+
+          <a class="avito-link" id="avito-link" href="https://www.avito.ru/" target="_blank" rel="noopener">
+            Перейти на Авито
+          </a>
+        </section>
+
+        <label class="consent-field">
+          <input id="privacy-consent" name="privacyConsent" type="checkbox" required>
+          <span>
+            Я соглашаюсь на обработку персональных данных и принимаю
+            <a href="privacy.html" target="_blank" rel="noopener">Политику конфиденциальности</a>.
+          </span>
+        </label>
+
+        <button class="order-submit" type="submit" disabled>
+          <span>Подтвердить заказ</span>
+          <img src="assets/icons/paw.svg" alt="">
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/order.js"></script>
+</body>
+</html>

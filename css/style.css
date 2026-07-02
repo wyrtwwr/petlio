@@ -1,5 +1,5 @@
 :root {
-  --color-bg: #ffffff;
+  --color-bg: #fdf8f5ff;
   --color-surface: #fffaf1;
   --color-text: #1a1a1a;
   --color-muted: #4f4a45;
@@ -11,6 +11,10 @@
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -68,6 +72,14 @@ p{
 
 .main-nav a:hover {
   color: var(--color-muted);
+}
+
+.main-nav a.is-active,
+.main-nav a[aria-current="page"] {
+  color: #000000;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
 }
 
 .block1 {
@@ -476,6 +488,35 @@ padding-top:0px;
   width: 45px;
 }
 
+.pet-examples {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 64px 64px;
+}
+
+.pet-examples h2 {
+  margin: 0 0 24px;
+  font-family: var(--font-accent);
+  font-size: clamp(42px, 4vw, 64px);
+  font-weight: 400;
+  line-height: 0.95;
+  text-align: center;
+}
+
+.pet-examples__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.pet-examples__grid img {
+  display: block;
+  width: 100%;
+  height: clamp(320px, 34vw, 520px);
+  object-fit: cover;
+  border-radius: 24px;
+}
+
 
 .shag_mobile {
   display: none;
@@ -659,6 +700,13 @@ padding-top:0px;
   color: var(--color-text);
   font-size: 12px;
   font-weight: 600;
+}
+
+.footer__copyright a {
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .footer__copyright img {

@@ -92,9 +92,10 @@
 
 @media (max-width: 768px) {
   .header-container {
+    flex-direction: column;
     min-height: 86px;
     padding: 14px 20px;
-    gap: 16px;
+    gap: 12px;
   }
 
   .logo img {
@@ -102,7 +103,17 @@
   }
 
   .main-nav {
-    display: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    margin-left: 0;
+    gap: 10px 18px;
+  }
+
+  .main-nav a {
+    font-size: 13px;
+    line-height: 1.2;
   }
 
   .block1 {
@@ -206,6 +217,16 @@
   .constructor-preview__title {
     margin-left: 8px;
     font-size: 32px;
+  }
+
+  .constructor-gallery {
+    gap: 14px;
+    padding: 0 16px 36px;
+  }
+
+  .constructor-gallery img {
+    height: clamp(220px, 30vw, 320px);
+    border-radius: 18px;
   }
 
   .tag-preview {
@@ -343,6 +364,24 @@
     padding: 12px 16px 44px;
   }
 
+  .pet-examples {
+    padding: 0 16px 44px;
+  }
+
+  .pet-examples h2 {
+    margin-bottom: 18px;
+    font-size: clamp(34px, 10vw, 46px);
+  }
+
+  .pet-examples__grid {
+    gap: 14px;
+  }
+
+  .pet-examples__grid img {
+    height: clamp(240px, 48vw, 360px);
+    border-radius: 18px;
+  }
+
   .block4 h1 {
     max-width: 12ch;
     margin-bottom: 18px;
@@ -436,10 +475,19 @@
 @media (max-width: 420px) {
   .header-container {
     padding: 12px 14px;
+    gap: 10px;
   }
 
   .logo img {
     width: 132px;
+  }
+
+  .main-nav {
+    gap: 8px 12px;
+  }
+
+  .main-nav a {
+    font-size: 12px;
   }
 
   .block1 {
@@ -484,6 +532,16 @@
 
   .constructor-preview__title {
     font-size: 29px;
+  }
+
+  .constructor-gallery {
+    grid-template-columns: 1fr;
+    padding: 0 12px 30px;
+  }
+
+  .constructor-gallery img {
+    height: auto;
+    aspect-ratio: 4 / 5;
   }
 
   .tag-preview {
@@ -613,6 +671,20 @@
     padding: 8px 12px 36px;
   }
 
+  .pet-examples {
+    padding: 0 12px 36px;
+  }
+
+  .pet-examples__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pet-examples__grid img {
+    height: auto;
+    max-height: none;
+    aspect-ratio: 4 / 5;
+  }
+
   .block4 h1 {
     font-size: clamp(28px, 10vw, 38px);
   }
@@ -671,11 +743,6 @@
 
   .tag-preview {
     width: 100%;
-  }
-
-  .tag-preview__content {
-    left: 12.5%;
-    width: 75%;
   }
 
   .doodle--rays,
