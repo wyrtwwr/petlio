@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         key: 'medium',
         title: 'Средний',
         value: '4 × 2,5 см',
-        price: '1599 ₽',
+        price: '1299 ₽',
       };
     }
 
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
       key: card.dataset.size || 'medium',
       title: card.dataset.sizeTitle || card.querySelector('h3')?.textContent.trim() || 'Средний',
       value: card.dataset.sizeValue || card.querySelector('.size-card__size')?.textContent.trim() || '4 × 2,5 см',
-      price: card.dataset.sizePrice || card.querySelector('.size-card__price')?.textContent.trim() || '1599 ₽',
+      price: card.dataset.sizePrice || card.querySelector('.size-card__price')?.textContent.trim() || '1299 ₽',
     };
   }
 

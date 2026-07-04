@@ -13,19 +13,19 @@ document.addEventListener('DOMContentLoaded', () => {
       key: 'small',
       title: 'Маленький',
       value: '3 x 2 см',
-      price: '1299 ₽',
+      price: '1099 ₽',
     },
     medium: {
       key: 'medium',
       title: 'Средний',
       value: '4 x 2,5 см',
-      price: '1599 ₽',
+      price: '1299 ₽',
     },
     large: {
       key: 'large',
       title: 'Большой',
       value: '5 x 3 см',
-      price: '1799 ₽',
+      price: '1399 ₽',
     },
   };
 
