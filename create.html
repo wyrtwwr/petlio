@@ -86,7 +86,7 @@
 
             <label class="field field--wide">
               <span>Телефон:</span>
-              <input id="pet-phone" type="tel" placeholder="+7 (___) ___ __ __, +7 (___) ___ __ __" maxlength="42" autocomplete="off">
+              <input id="pet-phone" type="tel" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="off" pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}(, \+7 \(\d{3}\) \d{3}-\d{2}-\d{2})?$" title="Введите один номер: +7 (999) 999-99-99 или два номера через запятую и пробел">
             </label>
 
             <button class="passport-button" type="button" id="passport-button">
@@ -117,7 +117,7 @@
                 <span class="tag-preview__line tag-preview__line--birthday" id="preview-birthday">дд.мм.гггг</span>
                 <span class="tag-preview__line tag-preview__line--breed" id="preview-breed">Пудель</span>
                 <small class="tag-preview__line tag-preview__line--address" id="preview-address">г. Москва, ул. Ленина</small>
-                <small class="tag-preview__line tag-preview__line--phone" id="preview-phone">+7 (___) ___ __ __</small>
+                <small class="tag-preview__line tag-preview__line--phone" id="preview-phone">+7 (___) ___-__-__</small>
               </div>
             </div>
           </div>
@@ -153,10 +153,24 @@
         <div class="block3_div">
             <div class="txt_1_block3_create">
                 <h1>ПОЧЕМУ ЭТО ВАЖНО?</h1>
-                <picture>
-                  <source media="(max-width: 768px)" srcset="assets/images/create_block3_mobile.png">
-                  <img class="block3_image" src="assets/images/create_block3.png" alt="Преимущества адресника">
-                </picture>
+                <div class="block3_image" aria-label="Преимущества адресника">
+                  <div class="block3_benefit">
+                    <img src="assets/icons/i1.svg" alt="">
+                    <p>Повышает шанс<br>возвращение домой</p>
+                  </div>
+                  <div class="block3_benefit">
+                    <img src="assets/icons/i2.svg" alt="">
+                    <p>Содержит все<br>необходимые данные о питомце</p>
+                  </div>
+                  <div class="block3_benefit">
+                    <img src="assets/icons/i3.svg" alt="">
+                    <p>Стильный и удобный аксессуар<br>на каждый день</p>
+                  </div>
+                  <div class="block3_benefit">
+                    <img src="assets/icons/i4.svg" alt="">
+                    <p>Влагостойкий<br>и прочный</p>
+                  </div>
+                </div>
             </div>
             <img class="block3_image2" src="assets/images/dog_create_block3.png" alt="">
 

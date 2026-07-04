@@ -523,6 +523,7 @@ padding-top:0px;
 }
 
 .shag {
+  max-width: 95%;
   display: block;
 }
 
@@ -535,6 +536,7 @@ padding-top:0px;
   margin: 0 auto;
   padding: 20px 64px 72px;
 }
+
 
 .block4 h1 {
   max-width: 900px;

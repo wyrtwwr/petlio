@@ -144,13 +144,15 @@ body {
   margin: 0;
 }
 
-.summary-list div {
+.summary-list .summary-row {
+  display: grid;
+  gap: 6px;
   padding-bottom: 12px;
   border-bottom: 1px dashed rgba(26, 26, 26, 0.22);
 }
 
 .summary-list dt {
-  margin-bottom: 5px;
+  margin-bottom: 2px;
   color: var(--color-muted);
   font-size: 12px;
   font-weight: 700;
@@ -158,9 +160,31 @@ body {
 
 .summary-list dd {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
+}
+
+.summary-list input,
+.summary-list textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1.2px solid rgba(26, 26, 26, 0.18);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--color-text);
+  font: 700 14px var(--font-main);
   line-height: 1.35;
+}
+
+.summary-list textarea {
+  min-height: 74px;
+  resize: vertical;
+}
+
+.summary-list input:focus,
+.summary-list textarea:focus {
+  border-color: #f0a900;
+  box-shadow: 0 0 0 3px rgba(255, 197, 51, 0.16);
+  outline: none;
 }
 
 .order-form {

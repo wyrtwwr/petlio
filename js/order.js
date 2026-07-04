@@ -15,16 +15,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function saveOrderData(orderData) {
+    localStorage.setItem('petlioOrder', JSON.stringify(orderData));
+  }
+
   function textOrFallback(value, fallback = 'Не указано') {
     return value && String(value).trim() ? value : fallback;
   }
 
-  function setText(selector, value) {
+  function setSummaryValue(selector, value, fallback = 'Не указано') {
     const element = document.querySelector(selector);
 
-    if (element) {
-      element.textContent = textOrFallback(value);
+    if (!element) {
+      return;
     }
+
+    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+      element.value = value && String(value).trim() ? String(value).trim() : '';
+      element.placeholder = fallback;
+      return;
+    }
+
+    element.textContent = textOrFallback(value, fallback);
   }
 
   function renderSummary(orderData) {
@@ -32,16 +44,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const pet = orderData.pet || {};
     const sizeParts = [size.title, size.value, size.price].filter(Boolean);
 
-    setText('#summary-size', sizeParts.join(', ') || 'Средний, 4 x 2,5 см');
-    setText('#summary-pet-name', pet.name);
-    setText('#summary-pet-birthday', pet.birthday);
-    setText('#summary-pet-breed', pet.breed);
-    setText('#summary-pet-address', pet.address);
-    setText('#summary-pet-phone', pet.phone);
+    setSummaryValue('#summary-size', sizeParts.join(', ') || 'Средний, 4 x 2,5 см');
+    setSummaryValue('#summary-pet-name', pet.name);
+    setSummaryValue('#summary-pet-birthday', pet.birthday);
+    setSummaryValue('#summary-pet-breed', pet.breed);
+    setSummaryValue('#summary-pet-address', pet.address);
+    setSummaryValue('#summary-pet-phone', pet.phone);
 
-    if (customerPhoneInput && pet.phone) {
-      customerPhoneInput.value = pet.phone;
+    if (customerPhoneInput) {
+      customerPhoneInput.value = pet.phone ? String(pet.phone).trim() : customerPhoneInput.value;
     }
+  }
+
+  function updateSummaryFromInputs(orderData) {
+    const summaryInputs = Array.from(document.querySelectorAll('.summary-list [data-summary-field]'));
+
+    summaryInputs.forEach((input) => {
+      const field = input.dataset.summaryField;
+      const key = input.dataset.summaryKey;
+
+      if (!field || !key) {
+        return;
+      }
+
+      if (field === 'size') {
+        orderData.size = {
+          ...(orderData.size || {}),
+          [key]: input.value.trim(),
+        };
+        return;
+      }
+
+      if (field === 'pet') {
+        orderData.pet = {
+          ...(orderData.pet || {}),
+          [key]: input.value.trim(),
+        };
+      }
+    });
+
+    if (customerPhoneInput && orderData.pet?.phone) {
+      customerPhoneInput.value = String(orderData.pet.phone).trim();
+    }
+
+    saveOrderData(orderData);
+    return orderData;
+  }
+
+  function attachSummaryEditors() {
+    document.querySelectorAll('.summary-list [data-summary-field]').forEach((input) => {
+      input.addEventListener('input', () => {
+        const orderData = updateSummaryFromInputs(readOrderData());
+        renderSummary(orderData);
+      });
+    });
   }
 
   function updateDeliveryView() {
@@ -83,8 +139,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  renderSummary(readOrderData());
+  const initialOrderData = readOrderData();
+  renderSummary(initialOrderData);
   updateDeliveryView();
+  attachSummaryEditors();
 
   deliveryTypeInputs.forEach((input) => {
     input.addEventListener('change', updateDeliveryView);
@@ -116,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
       submittedAt: new Date().toISOString(),
     };
 
-    localStorage.setItem('petlioOrder', JSON.stringify(nextOrder));
+    saveOrderData(nextOrder);
 
     setSubmitting(true);
 
