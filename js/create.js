@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.addEventListener('load', () => {
       previewPhoto.src = reader.result;
       preview.classList.add('has-photo');
+      saveConstructorOrder();
     });
 
     reader.readAsDataURL(file);
@@ -195,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         breed: document.querySelector('#pet-breed')?.value.trim() || '',
         address: document.querySelector('#pet-address')?.value.trim() || '',
         phone: document.querySelector('#pet-phone')?.value.trim() || '',
+        photo: previewPhoto?.src?.startsWith('data:image/') ? previewPhoto.src : '',
       },
       size: getSelectedSize(),
     };

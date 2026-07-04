@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function saveSelectedSize() {
-    const selectedCard = document.querySelector('.size-card.is-selected') || document.querySelector('.size-card--medium') || sizeCards[0];
+    const selectedCard = document.querySelector('.size-card--medium') || sizeCards[1] || sizeCards[0];
     const previousOrder = JSON.parse(localStorage.getItem('petlioOrder') || '{}');
     const nextOrder = {
       ...previousOrder,
@@ -34,9 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('petlioOrder', JSON.stringify(nextOrder));
   }
 
-  function selectCard(card) {
+  function keepMediumSelected() {
+    const mediumCard = document.querySelector('.size-card--medium') || sizeCards[1] || sizeCards[0];
+
     sizeCards.forEach((item) => {
-      const isActive = item === card;
+      const isActive = item === mediumCard;
       item.classList.toggle('is-selected', isActive);
       item.setAttribute('aria-pressed', String(isActive));
     });
@@ -50,17 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      selectCard(card);
+      keepMediumSelected();
     });
 
     card.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        selectCard(card);
+        keepMediumSelected();
       }
     });
   });
 
+  keepMediumSelected();
   saveSelectedSize();
   orderButton?.addEventListener('click', saveSelectedSize);
 

@@ -39,6 +39,21 @@
       <aside class="order-summary" aria-label="Данные адресника">
         <h2>Ваш адресник</h2>
 
+        <div class="summary-photo" id="summary-photo" hidden>
+          <img id="summary-pet-photo" alt="Фото питомца">
+        </div>
+
+        <label class="summary-photo-upload">
+          <input id="summary-photo-input" type="file" accept="image/png,image/jpeg">
+          <span>Заменить фото</span>
+        </label>
+
+        <div class="summary-size-picker" id="summary-size-picker" role="group" aria-label="Выберите размер адресника">
+          <button type="button" data-size="small">Маленький</button>
+          <button type="button" data-size="medium">Средний</button>
+          <button type="button" data-size="large">Большой</button>
+        </div>
+
         <dl class="summary-list">
           <div class="summary-row">
             <dt>Размер</dt>
@@ -132,7 +147,7 @@
             <input id="pickup-address" name="pickupAddress" type="text" placeholder="Например: Озон, г. Москва, ул. Ленина, 10" required>
           </label>
 
-          <a class="avito-link" id="avito-link" href="https://www.avito.ru/" target="_blank" rel="noopener">
+          <a class="avito-link" id="avito-link" href="https://www.avito.ru/kazan/tovary_dlya_zhivotnyh/adresnik_pasport_dlya_pitomtsa_8047197938?slocation=621540&context=H4sIAAAAAAAA_wE_AMD_YToyOntzOjEzOiJsb2NhbFByaW9yaXR5IjtiOjA7czoxOiJ4IjtzOjE2OiJ2V1EyY1I1U2gzT0JVTm83Ijt9vD8Aiz8AAAA" target="_blank" rel="noopener">
             Перейти на Авито
           </a>
         </section>

@@ -6,6 +6,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const privacyConsentInput = document.querySelector('#privacy-consent');
   const submitButton = document.querySelector('.order-submit');
   const submitButtonText = submitButton?.querySelector('span');
+  const summaryPhotoInput = document.querySelector('#summary-photo-input');
+  const summarySizeButtons = Array.from(document.querySelectorAll('#summary-size-picker [data-size]'));
+  const sizeOptions = {
+    small: {
+      key: 'small',
+      title: 'Маленький',
+      value: '3 x 2 см',
+      price: '1299 ₽',
+    },
+    medium: {
+      key: 'medium',
+      title: 'Средний',
+      value: '4 x 2,5 см',
+      price: '1599 ₽',
+    },
+    large: {
+      key: 'large',
+      title: 'Большой',
+      value: '5 x 3 см',
+      price: '1799 ₽',
+    },
+  };
 
   function readOrderData() {
     try {
@@ -43,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const size = orderData.size || {};
     const pet = orderData.pet || {};
     const sizeParts = [size.title, size.value, size.price].filter(Boolean);
+    const summaryPhoto = document.querySelector('#summary-photo');
+    const summaryPetPhoto = document.querySelector('#summary-pet-photo');
 
     setSummaryValue('#summary-size', sizeParts.join(', ') || 'Средний, 4 x 2,5 см');
     setSummaryValue('#summary-pet-name', pet.name);
@@ -50,6 +74,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setSummaryValue('#summary-pet-breed', pet.breed);
     setSummaryValue('#summary-pet-address', pet.address);
     setSummaryValue('#summary-pet-phone', pet.phone);
+
+    summarySizeButtons.forEach((button) => {
+      const isActive = button.dataset.size === (size.key || 'medium');
+
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+
+    if (summaryPhoto && summaryPetPhoto) {
+      const photo = typeof pet.photo === 'string' && pet.photo.startsWith('data:image/') ? pet.photo : '';
+
+      summaryPhoto.hidden = !photo;
+      summaryPetPhoto.src = photo;
+    }
 
     if (customerPhoneInput) {
       customerPhoneInput.value = pet.phone ? String(pet.phone).trim() : customerPhoneInput.value;
@@ -97,6 +135,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const orderData = updateSummaryFromInputs(readOrderData());
         renderSummary(orderData);
       });
+    });
+
+    summarySizeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const orderData = readOrderData();
+        const size = sizeOptions[button.dataset.size] || sizeOptions.medium;
+
+        orderData.size = size;
+        saveOrderData(orderData);
+        renderSummary(orderData);
+      });
+    });
+
+    summaryPhotoInput?.addEventListener('change', () => {
+      const file = summaryPhotoInput.files?.[0];
+
+      if (!file || !file.type.startsWith('image/')) {
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.addEventListener('load', () => {
+        const orderData = readOrderData();
+
+        orderData.pet = {
+          ...(orderData.pet || {}),
+          photo: String(reader.result || ''),
+        };
+
+        saveOrderData(orderData);
+        renderSummary(orderData);
+      });
+
+      reader.readAsDataURL(file);
     });
   }
 

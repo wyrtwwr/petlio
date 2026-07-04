@@ -567,68 +567,77 @@ display:none;
 
 .tag-preview--small {
   --preview-width: min(100%, 360px);
-  --content-left: 4%;
-  --content-top: 49%;
+  --content-left: 6%;
+  --content-top: 50%;
   --content-width: 90%;
   --content-height: 49%;
   --photo-left: 1.5%;
   --photo-top: 19.5%;
-  --photo-width: 24%;
-  --photo-height: 94%;
-  --text-left: 47%;
+  --photo-width: 26%;
+  --photo-height: 68%;
+  --text-left: 46%;
   --text-top: 43.5%;
   --text-width: 70%;
   --text-height: 54%;
   --breed-left: 1%;
   --breed-top: 60%;
-  --phone-left: -1%;
-  --phone-top: 116%;
-  --name-size: clamp(12px, 3.7cqw, 15px);
+  --phone-left: -3%;
+  --phone-top: 114%;
+  --name-size: clamp(12px, 2.7cqw, 15px);
   --text-size: clamp(10px, 3.3cqw, 13px);
-  --phone-size: clamp(8px, 9.6cqw, 10px);
+  --phone-size: clamp(8px, 9.6cqw, 9px);
 }
 
 .tag-preview--medium {
   --preview-width: min(100%, 425px);
-  --content-left: 4%;
+  --content-left: 6%;
   --content-top: 49.25%;
   --content-width: 89%;
   --content-height: 49%;
   --photo-left: 1.4%;
-  --photo-top: 19.25%;
-  --photo-width: 24%;
-  --photo-height: 94%;
-  --text-left: 48%;
+  --photo-top: 21.25%;
+  --photo-width: 26%;
+  --photo-height: 68%;
+  --text-left: 46%;
   --text-top: 43.75%;
   --text-width: 71%;
   --text-height: 54%;
-  --breed-left: 1%;
-  --breed-top: 60%;
+  --breed-left: 2%;
+  --breed-top: 64%;
+  --birthday-left: 21%;
+  --birthday-top: 36%;
+  --address-left: -19%;
+  --address-top: 89.5%;
   --phone-left: -1%;
-  --phone-top: 116%;
+  --phone-top: 117%;
   --name-size: clamp(15px, 4.2cqw, 17px);
-  --text-size: clamp(12px, 3.7cqw, 15px);
+  --text-size: clamp(10px, 3.7cqw, 13px);
   --phone-size: clamp(9px, 10cqw, 11px);
 }
 
 .tag-preview--large {
   --preview-width: min(100%, 495px);
-  --content-left: 4.5%;
-  --content-top: 49.5%;
-  --content-width: 88%;
+  --content-left: 5.5%;
+  --content-top: 50%;
+  --content-width: 100%;
   --content-height: 50%;
   --photo-left: 1.3%;
   --photo-top: 19%;
   --photo-width: 24%;
-  --photo-height: 95%;
-  --text-left: 49%;
+  --photo-height: 67%;
+  --text-left: 42%;
   --text-top: 44%;
   --text-width: 72%;
   --text-height: 54%;
   --breed-left: 1%;
-  --breed-top: 60%;
+  --breed-top: 58.5%;
+  --birthday-left: 17%;
+  --birthday-top: 32%;
+  --address-left: -18%;
+  --address-top: 83.5%;
+  --address-indent: 49%;
   --phone-left: -1%;
-  --phone-top: 116%;
+  --phone-top: 114%;
   --name-size: clamp(17px, 4.8cqw, 18px);
   --text-size: clamp(14px, 3.8cqw, 16px);
   --phone-size: clamp(9px, 10.6cqw, 12px);
@@ -705,8 +714,8 @@ display:none;
 }
 
 .tag-preview__line--birthday {
-  --line-left: 19%;
-  --line-top: 34%;
+  --line-left: var(--birthday-left, 19%);
+  --line-top: var(--birthday-top, 34%);
   --line-width: 100%;
 }
 
@@ -718,10 +727,10 @@ display:none;
 
 .tag-preview__line--address {
   --line-width: 85%;
-  --line-left: -20%;
+  --line-left: var(--address-left, -20%);
   --line-height: 2.3em;
-  --line-top: 84.5%;
-  --address-first-indent: 56%;
+  --line-top: var(--address-top, 86.5%);
+  --address-first-indent: var(--address-indent, 57%);
   height: var(--line-height);
   line-height: 1;
   text-indent: var(--address-first-indent);
