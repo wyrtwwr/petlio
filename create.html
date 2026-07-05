@@ -144,9 +144,25 @@
     </section>
 
     <section class="constructor-gallery" aria-label="Примеры адресников на питомцах">
-      <img src="assets/images/s1.jpg" alt="Адресник на питомце">
-      <img src="assets/images/s2.jpg" alt="Адресник на питомце">
-      <img src="assets/images/s3.jpg" alt="Адресник на питомце">
+      <button class="constructor-gallery__arrow constructor-gallery__arrow--prev" type="button" aria-label="Предыдущий пример">
+        &lsaquo;
+      </button>
+
+      <div class="constructor-gallery__frame">
+        <div class="constructor-gallery__track">
+          <img class="constructor-gallery__slide" src="assets/images/p1.JPG" alt="Адресник на питомце">
+          <img class="constructor-gallery__slide" src="assets/images/p2.JPG" alt="Адресник на питомце">
+          <img class="constructor-gallery__slide" src="assets/images/p3.JPG" alt="Адресник на питомце">
+          <img class="constructor-gallery__slide" src="assets/images/p4.JPG" alt="Адресник на питомце">
+          <img class="constructor-gallery__slide" src="assets/images/p5.JPG" alt="Адресник на питомце">
+        </div>
+      </div>
+
+      <div class="constructor-gallery__dots" aria-label="Навигация по примерам"></div>
+
+      <button class="constructor-gallery__arrow constructor-gallery__arrow--next" type="button" aria-label="Следующий пример">
+        &rsaquo;
+      </button>
     </section>
 
     <section class="block3_create">
@@ -231,5 +247,6 @@
   </main>
 
   <script src="js/create.js"></script>
+  <script src="js/slider.js"></script>
 </body>
 </html>

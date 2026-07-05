@@ -2,13 +2,13 @@ body {
   margin: 0;
   font-family: var(--font-main);
   color: var(--color-text);
- background-color: #ffffff;
+ background-color: #FDF8F5;
   overflow-x: hidden;
 }
 
 
 :root {
-  --color-bg: #ffffff;
+  --color-bg: #FDF8F5;
   --color-surface: #fffaf1;
   --color-text: #1a1a1a;
   --color-muted: #4f4a45;
@@ -30,7 +30,7 @@ body {
   margin: 0;
   font-family: var(--font-main);
   color: var(--color-text);
-  background-color:  #ffffff;
+  background-color:  #FDF8F5;
   overflow-x: hidden;
 }
 h1 {
@@ -45,7 +45,7 @@ p{
 }
 
 .header-container {
-  background-color:  #ffffff;
+  background-color:  #FDF8F5;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -191,6 +191,8 @@ padding-top:0px;
 }
 
 .dog_block1 {
+  position: relative;
+  z-index: -1;
   display: block;
   width: min(100%, 820px);
   height: auto;
@@ -198,8 +200,10 @@ padding-top:0px;
 }
 
 .constructor {
+  z-index: 3;
+  position: relative;
   max-width: 1375px;
-  margin: -40px auto 72px;
+  margin: -90px auto 72px;
   padding: 0 32px;
 }
 
@@ -840,23 +844,122 @@ display:none;
 }
 
 .constructor-gallery {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
+  --gallery-gap: clamp(12px, 1.5vw, 20px);
+  --gallery-visible: 3;
+  --gallery-slide-width: calc((100% - var(--gallery-gap) - var(--gallery-gap)) / 3);
+  position: relative;
   max-width: 1360px;
-  margin: 0 auto;
-  padding: 4px 25px 46px;
+  margin: 0 auto 32px;
+  padding: 28px 92px 58px;
+  border-radius: 20px;
+  background: #fcf2e5;
 }
 
-.constructor-gallery img {
+.constructor-gallery__frame {
+  overflow: hidden;
+  border-radius: 18px;
+  touch-action: pan-y;
+}
+
+.constructor-gallery__track {
+  display: flex;
+  gap: var(--gallery-gap);
+  transition: transform 0.48s ease;
+  will-change: transform;
+}
+
+.constructor-gallery__track.is-dragging {
+  transition: none;
+}
+
+.constructor-gallery__slide {
+  flex: 0 0 var(--gallery-slide-width);
   display: block;
-  width: 100%;
-  height: clamp(280px, 28vw, 420px);
+  width: var(--gallery-slide-width);
+  min-width: var(--gallery-slide-width);
+  max-width: var(--gallery-slide-width);
+  aspect-ratio: 5 / 6;
   object-fit: cover;
-  border-radius: 22px;
+  border: 1.5px solid rgba(26, 26, 26, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 22px rgba(26, 26, 26, 0.08);
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
+.constructor-gallery__arrow {
+  position: absolute;
+  top: calc(50% - 22px);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-text);
+  font-size: 36px;
+  font-family: Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(255, 194, 26, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
 
+.constructor-gallery__arrow:hover {
+  transform: translateY(-2px);
+  background: #ffd34b;
+  box-shadow: 0 12px 24px rgba(255, 194, 26, 0.34);
+}
+
+.constructor-gallery__arrow:focus-visible,
+.constructor-gallery__dot:focus-visible {
+  outline: 2px solid var(--color-border);
+  outline-offset: 3px;
+}
+
+.constructor-gallery__arrow--prev {
+  left: 28px;
+  padding: 0 2px 3px 0;
+}
+
+.constructor-gallery__arrow--next {
+  right: 28px;
+  padding: 0 0 3px 2px;
+}
+
+.constructor-gallery__dots {
+  position: absolute;
+  right: 92px;
+  bottom: 24px;
+  left: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 10px;
+}
+
+.constructor-gallery__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 1px solid rgba(26, 26, 26, 0.2);
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.constructor-gallery__dot.is-active {
+  border-color: var(--color-border);
+  background: var(--color-accent);
+  transform: scale(1.12);
+}
 
 .block3_create {
   max-width: 1360px;
