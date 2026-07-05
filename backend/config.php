@@ -50,7 +50,7 @@ return [
         'secret_key' => env_value('YOOKASSA_SECRET_KEY', ''),
     ],
 
-    'order_email' => env_value('ORDER_EMAIL', 'orders@example.ru'),
+    'order_email' => env_value('ORDER_EMAIL', 'ppetfoli@mail.ru'),
 
     'smtp' => [
         'host' => env_value('SMTP_HOST', ''),
