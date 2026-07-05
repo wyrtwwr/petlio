@@ -240,7 +240,7 @@
   }
 
   .tag-preview--small {
-    --preview-width: min(100%, 360px);
+    --preview-width: min(72vw, 285px);
     --content-left: 6%;
     --content-top: 49%;
     --content-width: 90%;
@@ -262,12 +262,8 @@
     --phone-size: clamp(8px, 9.6cqw, 8px);
   }
 
-  .tag-preview.has-photo.tag-preview--small {
-    --preview-width: min(78vw, 285px);
-  }
-
   .tag-preview--medium {
-    --preview-width: min(100%, 425px);
+    --preview-width: min(82vw, 315px);
     --content-left: 6%;
     --content-top: 49.25%;
     --content-width: 89%;
@@ -735,10 +731,6 @@
     --preview-width: min(72vw, 230px);
   }
 
-  .tag-preview.has-photo.tag-preview--small {
-    --preview-width: min(78vw, 252px);
-  }
-
   .tag-preview--medium {
     --preview-width: min(84vw, 274px);
   }
@@ -1003,10 +995,6 @@
 
   .tag-preview--small {
     --preview-width: min(76vw, 220px);
-  }
-
-  .tag-preview.has-photo.tag-preview--small {
-    --preview-width: min(82vw, 238px);
   }
 
   .tag-preview--medium {
