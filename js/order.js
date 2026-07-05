@@ -212,6 +212,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  function buildPaymentPayload(orderData) {
+    const payload = JSON.parse(JSON.stringify(orderData));
+
+    if (payload.pet?.photo) {
+      delete payload.pet.photo;
+    }
+
+    return payload;
+  }
+
   const initialOrderData = readOrderData();
   renderSummary(initialOrderData);
   updateDeliveryView();
@@ -233,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     submitButton.disabled = isSubmitting || !orderForm.checkValidity() || !privacyConsentInput?.checked;
 
     if (submitButtonText) {
-      submitButtonText.textContent = isSubmitting ? 'Отправляем...' : 'Подтвердить заказ';
+      submitButtonText.textContent = isSubmitting ? 'Переходим к оплате...' : 'Перейти к оплате';
     }
   }
 
@@ -241,9 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
 
     const previousOrder = readOrderData();
+    const selectedSizeKey = summarySizeButtons.find((button) => button.classList.contains('is-active'))?.dataset.size || previousOrder.size?.key || 'medium';
+    const selectedSize = sizeOptions[selectedSizeKey] || sizeOptions.medium;
     const nextOrder = {
       ...previousOrder,
       ...collectFormData(),
+      size: selectedSize,
       submittedAt: new Date().toISOString(),
     };
 
@@ -252,23 +265,28 @@ document.addEventListener('DOMContentLoaded', () => {
     setSubmitting(true);
 
     try {
-      const response = await fetch('backend/order.php', {
+      const response = await fetch('backend/create-payment.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(nextOrder),
+        body: JSON.stringify(buildPaymentPayload(nextOrder)),
       });
       const result = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(result.message || 'Не удалось отправить заявку.');
+        throw new Error(result.message || 'Не удалось создать платеж.');
       }
 
-      orderForm.classList.add('is-submitted');
-      alert(result.message || 'Заявка отправлена. Мы свяжемся с вами для подтверждения.');
+      if (!result.confirmation_url) {
+        throw new Error('Платеж создан без ссылки на оплату.');
+      }
+
+      window.location.href = result.confirmation_url;
+      return;
+
     } catch (error) {
-      alert(error.message || 'Не удалось отправить заявку. Попробуйте еще раз.');
+      alert(error.message || 'Не удалось перейти к оплате. Попробуйте еще раз.');
     } finally {
       setSubmitting(false);
       updateSubmitState();
