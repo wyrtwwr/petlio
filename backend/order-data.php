@@ -34,7 +34,7 @@ function sanitize_order_payload(array $payload): array
     $privacyConsent = !empty($payload['consent']['privacyPolicy']);
 
     if ($customerName === '' || $customerAddress === '' || $customerPhone === '' || !$privacyConsent) {
-        json_response(['message' => 'Заполните данные получателя и подтвердите согласие с политикой.'], 422);
+        json_response(['message' => 'Заполните данные получателя и подтвердите согласие с политикой и офертой.'], 422);
     }
 
     $size = PETLIO_SIZE_PRICES[$sizeKey];
