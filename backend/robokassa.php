@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-const ROBOKASSA_PAYMENT_URL = 'https://auth.robokassa.ru/Merchant/Payment/Index';
+const ROBOKASSA_PAYMENT_URL = 'https://auth.robokassa.ru/Merchant/Index.aspx';
 const ROBOKASSA_ALLOWED_HASH_ALGORITHMS = ['md5'];
 
 function robokassa_is_test(array $config): bool
