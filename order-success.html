@@ -31,12 +31,23 @@
     <section class="order-hero" aria-labelledby="success-title">
       <div>
         <p class="order-eyebrow">Оплата</p>
-        <h1 id="success-title">Спасибо! Проверяем оплату</h1>
-        <p>Если платеж прошел успешно, YooKassa отправит подтверждение на сервер, и данные заказа уйдут нам на почту автоматически.</p>
+        <h1 id="success-title">Спасибо! Ждем подтверждение</h1>
+        <p class="order-copy">
+          Заказ будет принят в работу после серверного уведомления Robokassa. Обычно это занимает несколько секунд.
+        </p>
       </div>
       <a class="order-edit" href="index.html">На главную</a>
     </section>
+
+    <section class="order-status-card" aria-live="polite">
+      <h2 id="payment-status-title">Проверяем оплату</h2>
+      <p id="payment-status-text">
+        Если оплата уже прошла, страница обновит статус автоматически. Письмо владельцу отправится после подтверждения Robokassa.
+      </p>
+    </section>
   </main>
+
+  <script src="js/order-success.js"></script>
   <script src="js/cookie-consent.js"></script>
 </body>
 </html>

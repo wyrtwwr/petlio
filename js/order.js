@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitButtonText = submitButton?.querySelector('span');
   const summaryPhotoInput = document.querySelector('#summary-photo-input');
   const summarySizeButtons = Array.from(document.querySelectorAll('#summary-size-picker [data-size]'));
+  const paymentFailureMessage = document.querySelector('#payment-failure-message');
+  let isSubmitting = false;
+
   const sizeOptions = {
     small: {
       key: 'small',
@@ -28,6 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
       price: '1399 ₽',
     },
   };
+
+  const returnParams = new URLSearchParams(window.location.search);
+  const hasRobokassaReturnParams = returnParams.has('InvId') || returnParams.has('OutSum') || returnParams.has('SignatureValue');
+  const shouldShowFailureMessage = returnParams.get('payment') === 'failed' || returnParams.get('fail') === '1' || hasRobokassaReturnParams;
+
+  if (paymentFailureMessage && shouldShowFailureMessage) {
+    paymentFailureMessage.hidden = false;
+  }
 
   function readOrderData() {
     try {
@@ -189,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    submitButton.disabled = !orderForm.checkValidity() || !privacyConsentInput?.checked;
+    submitButton.disabled = isSubmitting || !orderForm.checkValidity() || !privacyConsentInput?.checked;
   }
 
   function collectFormData() {
@@ -235,7 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
   orderForm?.addEventListener('change', updateSubmitState);
   updateSubmitState();
 
-  function setSubmitting(isSubmitting) {
+  function setSubmitting(nextSubmittingState) {
+    isSubmitting = nextSubmittingState;
+
     if (!submitButton) {
       return;
     }
@@ -249,6 +262,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   orderForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    if (paymentFailureMessage) {
+      paymentFailureMessage.hidden = true;
+    }
 
     const previousOrder = readOrderData();
     const selectedSizeKey = summarySizeButtons.find((button) => button.classList.contains('is-active'))?.dataset.size || previousOrder.size?.key || 'medium';
@@ -272,17 +293,34 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         body: JSON.stringify(buildPaymentPayload(nextOrder)),
       });
-      const result = await response.json().catch(() => ({}));
+      const result = await response.json().catch(() => null);
+      const message = result && typeof result.message === 'string' ? result.message : '';
 
       if (!response.ok) {
-        throw new Error(result.message || 'Не удалось создать платеж.');
+        throw new Error(message || 'Не удалось создать платеж.');
       }
 
-      if (!result.confirmation_url) {
+      if (!result || typeof result !== 'object') {
+        throw new Error('Сервер вернул некорректный ответ.');
+      }
+
+      const paymentUrl = typeof result.payment_url === 'string' && result.payment_url.trim()
+        ? result.payment_url.trim()
+        : String(result.confirmation_url || '').trim();
+
+      if (!paymentUrl) {
         throw new Error('Платеж создан без ссылки на оплату.');
       }
 
-      window.location.href = result.confirmation_url;
+      try {
+        if (typeof result.order_uid === 'string' && result.order_uid.trim()) {
+          sessionStorage.setItem('petlioLastOrderUid', result.order_uid.trim());
+        }
+      } catch (storageError) {
+        // Status polling is optional; payment redirect must not depend on browser storage.
+      }
+
+      window.location.href = paymentUrl;
       return;
 
     } catch (error) {

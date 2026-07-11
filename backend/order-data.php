@@ -67,16 +67,16 @@ function sanitize_order_payload(array $payload): array
     ];
 }
 
-function insert_order(PDO $pdo, array $order): void
+function insert_order(PDO $pdo, array $order): int
 {
     $sql = 'INSERT INTO orders (
-        order_uid, payment_status, size_key, size_title, size_value, size_price,
+        order_uid, payment_status, payment_provider, size_key, size_title, size_value, size_price,
         pet_name, pet_birthday, pet_breed, pet_address, pet_phone,
         customer_name, customer_address, customer_phone,
         delivery_type, delivery_service, pickup_address,
         amount, raw_payload
     ) VALUES (
-        :order_uid, :payment_status, :size_key, :size_title, :size_value, :size_price,
+        :order_uid, :payment_status, :payment_provider, :size_key, :size_title, :size_value, :size_price,
         :pet_name, :pet_birthday, :pet_breed, :pet_address, :pet_phone,
         :customer_name, :customer_address, :customer_phone,
         :delivery_type, :delivery_service, :pickup_address,
@@ -87,6 +87,7 @@ function insert_order(PDO $pdo, array $order): void
     $stmt->execute([
         ':order_uid' => $order['order_uid'],
         ':payment_status' => $order['payment_status'],
+        ':payment_provider' => $order['payment_provider'] ?? 'robokassa',
         ':size_key' => $order['size_key'],
         ':size_title' => $order['size_title'],
         ':size_value' => $order['size_value'],
@@ -105,12 +106,26 @@ function insert_order(PDO $pdo, array $order): void
         ':amount' => $order['amount'],
         ':raw_payload' => $order['raw_payload'],
     ]);
+
+    return (int) $pdo->lastInsertId();
 }
 
-function update_order_payment_id(PDO $pdo, string $orderUid, string $paymentId): void
+function assign_robokassa_invoice(PDO $pdo, int $orderId): void
 {
-    $stmt = $pdo->prepare('UPDATE orders SET payment_id = :payment_id WHERE order_uid = :order_uid');
-    $stmt->execute([':payment_id' => $paymentId, ':order_uid' => $orderUid]);
+    $stmt = $pdo->prepare(
+        'UPDATE orders
+         SET robokassa_inv_id = :inv_id, updated_at = CURRENT_TIMESTAMP
+         WHERE id = :order_id AND payment_provider = :payment_provider'
+    );
+    $stmt->execute([
+        ':inv_id' => $orderId,
+        ':order_id' => $orderId,
+        ':payment_provider' => 'robokassa',
+    ]);
+
+    if ($stmt->rowCount() !== 1) {
+        throw new RuntimeException('Failed to assign Robokassa InvId.');
+    }
 }
 
 function find_order_by_uid(PDO $pdo, string $orderUid, bool $forUpdate = false): ?array
@@ -128,22 +143,52 @@ function find_order_by_uid(PDO $pdo, string $orderUid, bool $forUpdate = false):
     return is_array($order) ? $order : null;
 }
 
-function mark_order_paid(PDO $pdo, string $orderUid, string $paymentId): void
+function find_order_by_robokassa_inv_id(PDO $pdo, int $invId, bool $forUpdate = false): ?array
+{
+    $sql = 'SELECT * FROM orders WHERE robokassa_inv_id = :inv_id';
+
+    if ($forUpdate) {
+        $sql .= ' FOR UPDATE';
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':inv_id' => $invId]);
+    $order = $stmt->fetch();
+
+    return is_array($order) ? $order : null;
+}
+
+function mark_robokassa_order_paid(PDO $pdo, int $invId): void
 {
     $stmt = $pdo->prepare(
         'UPDATE orders
-         SET payment_status = :status, payment_id = :payment_id, paid_at = COALESCE(paid_at, NOW())
-         WHERE order_uid = :order_uid'
+         SET payment_status = :status,
+             payment_provider = :payment_provider,
+             robokassa_inv_id = :inv_id,
+             paid_at = COALESCE(paid_at, CURRENT_TIMESTAMP),
+             updated_at = CURRENT_TIMESTAMP
+         WHERE robokassa_inv_id = :inv_id AND payment_status = :pending_status'
     );
     $stmt->execute([
         ':status' => 'paid',
-        ':payment_id' => $paymentId,
-        ':order_uid' => $orderUid,
+        ':payment_provider' => 'robokassa',
+        ':inv_id' => $invId,
+        ':pending_status' => 'pending',
     ]);
+
+    if ($stmt->rowCount() !== 1) {
+        throw new RuntimeException('Failed to mark Robokassa order as paid.');
+    }
 }
 
-function mark_order_email_sent(PDO $pdo, string $orderUid): void
+function mark_order_email_sent(PDO $pdo, int $orderId): void
 {
-    $stmt = $pdo->prepare('UPDATE orders SET email_sent = 1 WHERE order_uid = :order_uid');
-    $stmt->execute([':order_uid' => $orderUid]);
+    $stmt = $pdo->prepare(
+        'UPDATE orders
+         SET email_sent = 1,
+             email_sent_at = COALESCE(email_sent_at, CURRENT_TIMESTAMP),
+             updated_at = CURRENT_TIMESTAMP
+         WHERE id = :order_id'
+    );
+    $stmt->execute([':order_id' => $orderId]);
 }

@@ -34,6 +34,23 @@ function env_value(string $key, ?string $default = null): ?string
     return (string) $value;
 }
 
+function env_bool(string $key, bool $default = false): bool
+{
+    $value = env_value($key);
+
+    if ($value === null) {
+        return $default;
+    }
+
+    $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+    if ($parsed === null) {
+        throw new RuntimeException(sprintf('%s must be a boolean value.', $key));
+    }
+
+    return $parsed;
+}
+
 return [
     'app_name' => 'PETLIO',
     'app_url' => rtrim(env_value('APP_URL', 'http://localhost') ?? 'http://localhost', '/'),
@@ -45,9 +62,22 @@ return [
         'pass' => env_value('DB_PASS', ''),
     ],
 
-    'yookassa' => [
-        'shop_id' => env_value('YOOKASSA_SHOP_ID', ''),
-        'secret_key' => env_value('YOOKASSA_SECRET_KEY', ''),
+    'robokassa' => [
+        'merchant_login' => env_value('ROBOKASSA_MERCHANT_LOGIN', ''),
+        'password1' => env_value('ROBOKASSA_PASSWORD1', ''),
+        'password2' => env_value('ROBOKASSA_PASSWORD2', ''),
+        'password3' => env_value('ROBOKASSA_PASSWORD3', ''),
+        'test_password1' => env_value('ROBOKASSA_TEST_PASSWORD1', ''),
+        'test_password2' => env_value('ROBOKASSA_TEST_PASSWORD2', ''),
+        'test' => env_bool('ROBOKASSA_TEST', true),
+        'hash_algorithm' => strtolower(env_value('ROBOKASSA_HASH_ALGORITHM', 'md5') ?? 'md5'),
+        'receipt' => [
+            'enabled' => env_bool('ROBOKASSA_RECEIPT_ENABLED', false),
+            'sno' => env_value('ROBOKASSA_RECEIPT_SNO', ''),
+            'payment_method' => env_value('ROBOKASSA_RECEIPT_PAYMENT_METHOD', ''),
+            'payment_object' => env_value('ROBOKASSA_RECEIPT_PAYMENT_OBJECT', ''),
+            'tax' => env_value('ROBOKASSA_RECEIPT_TAX', ''),
+        ],
     ],
 
     'order_email' => env_value('ORDER_EMAIL', 'ppetfoli@mail.ru'),

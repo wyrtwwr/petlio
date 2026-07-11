@@ -48,6 +48,8 @@ function build_order_email_plain(array $order): string
         '',
         'Платеж',
         'order_uid: ' . order_field($order, 'order_uid'),
+        'payment_provider: ' . order_field($order, 'payment_provider'),
+        'robokassa_inv_id: ' . order_field($order, 'robokassa_inv_id'),
         'payment_id: ' . order_field($order, 'payment_id'),
         'Сумма: ' . order_field($order, 'amount') . ' RUB',
         'Статус: ' . order_field($order, 'payment_status'),
@@ -78,6 +80,8 @@ function build_order_email_html(array $order): string
         ],
         'Платеж' => [
             'order_uid' => order_field($order, 'order_uid'),
+            'payment_provider' => order_field($order, 'payment_provider'),
+            'robokassa_inv_id' => order_field($order, 'robokassa_inv_id'),
             'payment_id' => order_field($order, 'payment_id'),
             'Сумма' => order_field($order, 'amount') . ' RUB',
             'Статус' => order_field($order, 'payment_status'),

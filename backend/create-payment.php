@@ -2,57 +2,47 @@
 
 declare(strict_types=1);
 
-use YooKassa\Client;
-
 require_once __DIR__ . '/security.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/order-data.php';
+require_once __DIR__ . '/robokassa.php';
 
 try {
     basic_rate_limit('create-payment', 10, 60);
     $payload = require_json_request();
     $config = require __DIR__ . '/config.php';
-
-    if (!class_exists(Client::class)) {
-        json_response(['message' => 'YooKassa SDK не установлен. Выполните composer install.'], 500);
-    }
-
-    if (empty($config['yookassa']['shop_id']) || empty($config['yookassa']['secret_key'])) {
-        json_response(['message' => 'YooKassa не настроена.'], 500);
-    }
+    robokassa_assert_configured($config);
 
     $order = sanitize_order_payload($payload);
+    $order['payment_provider'] = 'robokassa';
     $pdo = getDatabaseConnection();
-    insert_order($pdo, $order);
+    $pdo->beginTransaction();
 
-    $client = new Client();
-    $client->setAuth($config['yookassa']['shop_id'], $config['yookassa']['secret_key']);
+    try {
+        $orderId = insert_order($pdo, $order);
 
-    $returnUrl = $config['app_url'] . '/order-success.html?order=' . rawurlencode($order['order_uid']);
-    $payment = $client->createPayment([
-        'amount' => [
-            'value' => $order['amount'],
-            'currency' => 'RUB',
-        ],
-        'capture' => true,
-        'confirmation' => [
-            'type' => 'redirect',
-            'return_url' => $returnUrl,
-        ],
-        'description' => 'Адресник PETLIO, заказ ' . $order['order_uid'],
-        'metadata' => [
-            'order_uid' => $order['order_uid'],
-        ],
-    ], $order['order_uid']);
+        if ($orderId < 1) {
+            throw new RuntimeException('Failed to allocate a numeric order id.');
+        }
 
-    $paymentId = $payment->getId();
-    $confirmationUrl = $payment->getConfirmation()->getConfirmationUrl();
+        assign_robokassa_invoice($pdo, $orderId);
+        $pdo->commit();
+    } catch (Throwable $error) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
 
-    update_order_payment_id($pdo, $order['order_uid'], $paymentId);
+        throw $error;
+    }
+
+    $paymentUrl = robokassa_build_payment_url($config, $order, $orderId);
 
     json_response([
-        'confirmation_url' => $confirmationUrl,
+        'success' => true,
+        'payment_url' => $paymentUrl,
+        'confirmation_url' => $paymentUrl,
         'order_uid' => $order['order_uid'],
+        'order_id' => $orderId,
     ]);
 } catch (Throwable $error) {
     handle_endpoint_error($error);

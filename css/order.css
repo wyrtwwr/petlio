@@ -109,6 +109,56 @@ body {
   background: #ffffff;
 }
 
+.order-copy {
+  max-width: 680px;
+  margin: 14px 0 0;
+  color: var(--color-muted);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.order-notice {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  border: 1.5px solid rgba(26, 26, 26, 0.2);
+  border-radius: 16px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.order-notice-error {
+  border-color: rgba(176, 34, 34, 0.35);
+  background: #fff3f0;
+  color: #8f1f16;
+}
+
+.order-status-card {
+  max-width: 720px;
+  padding: 24px;
+  border: 1.5px solid rgba(26, 26, 26, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.order-status-card h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-accent);
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 0.95;
+}
+
+.order-status-card p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .order-layout {
   display: grid;
   grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
