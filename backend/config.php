@@ -23,32 +23,36 @@ if (class_exists(\Dotenv\Dotenv::class) && is_file(dirname(__DIR__) . '/.env')) 
     }
 }
 
-function env_value(string $key, ?string $default = null): ?string
-{
-    $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+if (!function_exists('env_value')) {
+    function env_value(string $key, ?string $default = null): ?string
+    {
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
 
-    if ($value === false || $value === null || $value === '') {
-        return $default;
+        if ($value === false || $value === null || $value === '') {
+            return $default;
+        }
+
+        return (string) $value;
     }
-
-    return (string) $value;
 }
 
-function env_bool(string $key, bool $default = false): bool
-{
-    $value = env_value($key);
+if (!function_exists('env_bool')) {
+    function env_bool(string $key, bool $default = false): bool
+    {
+        $value = env_value($key);
 
-    if ($value === null) {
-        return $default;
+        if ($value === null) {
+            return $default;
+        }
+
+        $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        if ($parsed === null) {
+            throw new RuntimeException(sprintf('%s must be a boolean value.', $key));
+        }
+
+        return $parsed;
     }
-
-    $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-    if ($parsed === null) {
-        throw new RuntimeException(sprintf('%s must be a boolean value.', $key));
-    }
-
-    return $parsed;
 }
 
 return [
