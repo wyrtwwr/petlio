@@ -15,6 +15,11 @@ try {
 
     $order = sanitize_order_payload($payload);
     $order['payment_provider'] = 'robokassa';
+
+    if (robokassa_is_test($config)) {
+        $order['amount'] = '1.00';
+    }
+
     $pdo = getDatabaseConnection();
     $pdo->beginTransaction();
 

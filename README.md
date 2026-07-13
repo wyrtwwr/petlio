@@ -48,6 +48,8 @@ ROBOKASSA_HASH_ALGORITHM=md5
 
 `ROBOKASSA_TEST` принимает `true/false`, `1/0`, `yes/no`, `on/off`. Реальные пароли не хранить в Git.
 
+При `ROBOKASSA_TEST=true` платежная сумма принудительно становится `1.00 RUB`, чтобы проверять интеграцию на тестовых платежах. При `ROBOKASSA_TEST=false` используются реальные цены из серверного прайса.
+
 SMTP:
 
 ```dotenv
