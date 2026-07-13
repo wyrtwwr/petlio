@@ -164,7 +164,6 @@ function mark_robokassa_order_paid(PDO $pdo, int $invId): void
         'UPDATE orders
          SET payment_status = :status,
              payment_provider = :payment_provider,
-             robokassa_inv_id = :inv_id,
              paid_at = COALESCE(paid_at, CURRENT_TIMESTAMP),
              updated_at = CURRENT_TIMESTAMP
          WHERE robokassa_inv_id = :inv_id AND payment_status = :pending_status'
