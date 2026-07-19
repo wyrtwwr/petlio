@@ -64,7 +64,7 @@
             <h2 class="constructor-form__title"><span>1.</span> ЗАГРУЗИТЕ ФОТО ПИТОМЦА</h2>
 
             <label class="photo-drop" for="pet-photo">
-              <input id="pet-photo" type="file" accept="image/png,image/jpeg">
+              <input id="pet-photo" type="file" accept="image/png,image/jpeg" required>
               <span class="photo-drop__icon" aria-hidden="true"></span>
               <span class="photo-drop__copy">
                 <strong>Нажмите, что бы загрузить<br>или перетащите фото сюда</strong>
@@ -78,29 +78,29 @@
 
             <label class="field field--wide">
               <span>Имя питомца</span>
-              <input id="pet-name" type="text" placeholder="Например: Чиж" maxlength="22" autocomplete="off">
+              <input id="pet-name" type="text" placeholder="Например: Чиж" maxlength="22" autocomplete="off" required>
             </label>
 
             <div class="field-row">
               <label class="field">
                 <span>Дата рождения:</span>
-                <input id="pet-birthday" type="text" placeholder="дд.мм.гггг" maxlength="10" autocomplete="off">
+                <input id="pet-birthday" type="text" placeholder="дд.мм.гггг" maxlength="10" autocomplete="off" required>
               </label>
 
               <label class="field">
                 <span>Порода:</span>
-                <input id="pet-breed" type="text" placeholder="Например: Пудель" maxlength="24" autocomplete="off">
+                <input id="pet-breed" type="text" placeholder="Например: Пудель" maxlength="24" autocomplete="off" required>
               </label>
             </div>
 
             <label class="field field--wide">
               <span>Место жительства:</span>
-              <input id="pet-address" type="text" placeholder="Например: г. Москва, ул. Ленина, д. 67, (по желанию) кв 108" maxlength="62" autocomplete="off">
+              <input id="pet-address" type="text" placeholder="Например: г. Москва, ул. Ленина, д. 67, кв 108" maxlength="62" autocomplete="off" required>
             </label>
 
             <label class="field field--wide">
               <span>Телефон:</span>
-              <input id="pet-phone" type="tel" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="off" pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}(, \+7 \(\d{3}\) \d{3}-\d{2}-\d{2})?$" title="Введите один номер: +7 (999) 999-99-99 или два номера через запятую и пробел">
+              <input id="pet-phone" type="tel" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="off" pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}(, \+7 \(\d{3}\) \d{3}-\d{2}-\d{2})?$" title="Введите один номер: +7 (999) 999-99-99 или два номера через запятую и пробел" required>
             </label>
 
             <button class="passport-button" type="button" id="passport-button">

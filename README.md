@@ -28,7 +28,7 @@ mysql -u petlio_user -p petlio < schema.sql
 mysql -u petlio_user -p petlio < migrations/2026_robokassa.sql
 ```
 
-Миграция добавляет `payment_provider`, `robokassa_inv_id`, `email_sent_at`, `updated_at` и индексы. Она не удаляет старые данные.
+Миграция добавляет `payment_provider`, `robokassa_inv_id`, `pet_photo_path`, `email_sent_at`, `updated_at` и индексы. Она не удаляет старые данные.
 
 ## Переменные окружения
 
@@ -80,6 +80,8 @@ SMTP_FROM_NAME=PETLIO
 ## Как работает оплата
 
 `backend/create-payment.php` валидирует заказ, считает цену только на сервере, создает запись `pending`, использует числовой `id` заказа как `InvId` и возвращает `payment_url` плюс совместимое поле `confirmation_url`.
+
+Все поля адресника и фото питомца обязательны. Фото сохраняется на сервере в `backend/uploads/order-photos/`, не коммитится в Git и прикладывается к письму с оплаченным заказом.
 
 `backend/robokassa-result.php` принимает только `POST`, проверяет `OutSum`, `InvId`, `SignatureValue` по формуле `OutSum:InvId:Password2`, сверяет сумму с заказом, переводит заказ в `paid` и отвечает строго `OK{InvId}`.
 

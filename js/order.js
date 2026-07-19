@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const summaryPhotoInput = document.querySelector('#summary-photo-input');
   const summarySizeButtons = Array.from(document.querySelectorAll('#summary-size-picker [data-size]'));
   const paymentFailureMessage = document.querySelector('#payment-failure-message');
+  const addressTagRequiredMessage = document.querySelector('#address-tag-required-message');
   let isSubmitting = false;
 
   const sizeOptions = {
@@ -54,6 +55,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function textOrFallback(value, fallback = 'Не указано') {
     return value && String(value).trim() ? value : fallback;
+  }
+
+  function hasRequiredAddressTagData(orderData) {
+    const pet = orderData.pet || {};
+    const requiredPetFields = ['name', 'birthday', 'breed', 'address', 'phone'];
+    const hasAllTextFields = requiredPetFields.every((field) => String(pet[field] || '').trim() !== '');
+    const hasPhoto = typeof pet.photo === 'string' && pet.photo.startsWith('data:image/');
+
+    return hasAllTextFields && hasPhoto;
+  }
+
+  function setAddressTagRequiredMessage(isVisible) {
+    if (addressTagRequiredMessage) {
+      addressTagRequiredMessage.hidden = !isVisible;
+    }
   }
 
   function setSummaryValue(selector, value, fallback = 'Не указано') {
@@ -145,6 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
       input.addEventListener('input', () => {
         const orderData = updateSummaryFromInputs(readOrderData());
         renderSummary(orderData);
+        setAddressTagRequiredMessage(false);
+        updateSubmitState();
       });
     });
 
@@ -156,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         orderData.size = size;
         saveOrderData(orderData);
         renderSummary(orderData);
+        updateSubmitState();
       });
     });
 
@@ -178,6 +197,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveOrderData(orderData);
         renderSummary(orderData);
+        setAddressTagRequiredMessage(false);
+        updateSubmitState();
       });
 
       reader.readAsDataURL(file);
@@ -200,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    submitButton.disabled = isSubmitting || !orderForm.checkValidity() || !privacyConsentInput?.checked;
+    submitButton.disabled = isSubmitting || !orderForm.checkValidity() || !privacyConsentInput?.checked || !hasRequiredAddressTagData(readOrderData());
   }
 
   function collectFormData() {
@@ -224,13 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function buildPaymentPayload(orderData) {
-    const payload = JSON.parse(JSON.stringify(orderData));
-
-    if (payload.pet?.photo) {
-      delete payload.pet.photo;
-    }
-
-    return payload;
+    return JSON.parse(JSON.stringify(orderData));
   }
 
   const initialOrderData = readOrderData();
@@ -253,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    submitButton.disabled = isSubmitting || !orderForm.checkValidity() || !privacyConsentInput?.checked;
+    submitButton.disabled = isSubmitting || !orderForm.checkValidity() || !privacyConsentInput?.checked || !hasRequiredAddressTagData(readOrderData());
 
     if (submitButtonText) {
       submitButtonText.textContent = isSubmitting ? 'Переходим к оплате...' : 'Перейти к оплате';
@@ -282,6 +297,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     saveOrderData(nextOrder);
+
+    if (!hasRequiredAddressTagData(nextOrder)) {
+      setAddressTagRequiredMessage(true);
+      updateSubmitState();
+      return;
+    }
+
+    setAddressTagRequiredMessage(false);
 
     setSubmitting(true);
 

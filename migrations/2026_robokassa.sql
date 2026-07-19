@@ -25,6 +25,7 @@ END//
 
 CALL petlio_add_column_if_missing('payment_provider', 'payment_provider VARCHAR(32) DEFAULT NULL AFTER payment_id')//
 CALL petlio_add_column_if_missing('robokassa_inv_id', 'robokassa_inv_id BIGINT UNSIGNED DEFAULT NULL AFTER payment_provider')//
+CALL petlio_add_column_if_missing('pet_photo_path', 'pet_photo_path VARCHAR(255) DEFAULT NULL AFTER pet_phone')//
 CALL petlio_add_column_if_missing('email_sent_at', 'email_sent_at DATETIME DEFAULT NULL AFTER email_sent')//
 CALL petlio_add_column_if_missing('updated_at', 'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER paid_at')//
 

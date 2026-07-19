@@ -155,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setPhoto(file) {
     if (!file || !file.type.startsWith('image/')) {
+      photoInput?.setCustomValidity('Загрузите фото питомца.');
       return;
     }
 
@@ -163,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.addEventListener('load', () => {
       previewPhoto.src = reader.result;
       preview.classList.add('has-photo');
+      photoInput?.setCustomValidity('');
       saveConstructorOrder();
     });
 
@@ -315,6 +317,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   passportButton?.addEventListener('click', () => {
+    if (photoInput && !photoInput.files.length && !previewPhoto?.src?.startsWith('data:image/')) {
+      photoInput.setCustomValidity('Загрузите фото питомца.');
+      photoDrop?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     if (form && !form.reportValidity()) {
       return;
     }

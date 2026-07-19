@@ -20,12 +20,73 @@ function create_order_uid(): string
     return bin2hex(random_bytes(16));
 }
 
+function normalize_order_photo(array $payload): array
+{
+    $photo = trim((string) ($payload['pet']['photo'] ?? ''));
+
+    if ($photo === '') {
+        json_response(['message' => 'Загрузите фото питомца для адресника.'], 422);
+    }
+
+    if (!preg_match('/^data:image\/(png|jpe?g);base64,([A-Za-z0-9+\/=]+)$/', $photo, $matches)) {
+        json_response(['message' => 'Загрузите фото питомца в формате JPG или PNG.'], 422);
+    }
+
+    $binary = base64_decode($matches[2], true);
+
+    if ($binary === false || $binary === '') {
+        json_response(['message' => 'Не удалось прочитать фото питомца. Загрузите файл еще раз.'], 422);
+    }
+
+    if (function_exists('getimagesizefromstring') && getimagesizefromstring($binary) === false) {
+        json_response(['message' => 'Загруженный файл не похож на изображение.'], 422);
+    }
+
+    if (strlen($binary) > 10 * 1024 * 1024) {
+        json_response(['message' => 'Фото питомца должно быть не больше 10 МБ.'], 422);
+    }
+
+    return [
+        'extension' => str_starts_with($matches[1], 'jp') ? 'jpg' : 'png',
+        'binary' => $binary,
+    ];
+}
+
+function save_order_photo(string $orderUid, array $photo): string
+{
+    $directory = __DIR__ . '/uploads/order-photos';
+
+    if (!is_dir($directory) && !mkdir($directory, 0750, true) && !is_dir($directory)) {
+        throw new RuntimeException('Failed to create order photo directory.');
+    }
+
+    $fileName = $orderUid . '.' . $photo['extension'];
+    $absolutePath = $directory . '/' . $fileName;
+
+    if (file_put_contents($absolutePath, $photo['binary'], LOCK_EX) === false) {
+        throw new RuntimeException('Failed to save order photo.');
+    }
+
+    return 'uploads/order-photos/' . $fileName;
+}
+
 function sanitize_order_payload(array $payload): array
 {
     $sizeKey = clean_text($payload['size']['key'] ?? '', 32);
 
     if (!isset(PETLIO_SIZE_PRICES[$sizeKey])) {
         json_response(['message' => 'Выберите корректный размер адресника.'], 422);
+    }
+
+    $petName = order_value($payload, 'pet', 'name', 100);
+    $petBirthday = order_value($payload, 'pet', 'birthday', 50);
+    $petBreed = order_value($payload, 'pet', 'breed', 100);
+    $petAddress = order_value($payload, 'pet', 'address', 255);
+    $petPhone = order_value($payload, 'pet', 'phone', 50);
+    $photo = normalize_order_photo($payload);
+
+    if ($petName === '' || $petBirthday === '' || $petBreed === '' || $petAddress === '' || $petPhone === '') {
+        json_response(['message' => 'Заполните все поля адресника и загрузите фото питомца.'], 422);
     }
 
     $customerName = order_value($payload, 'customer', 'name', 150);
@@ -44,18 +105,21 @@ function sanitize_order_payload(array $payload): array
         $rawPayload['pet']['photo'] = '[photo omitted]';
     }
 
+    $orderUid = create_order_uid();
+
     return [
-        'order_uid' => create_order_uid(),
+        'order_uid' => $orderUid,
         'payment_status' => 'pending',
         'size_key' => $size['key'],
         'size_title' => $size['title'],
         'size_value' => $size['value'],
         'size_price' => $size['amount'] . ' ₽',
-        'pet_name' => order_value($payload, 'pet', 'name', 100),
-        'pet_birthday' => order_value($payload, 'pet', 'birthday', 50),
-        'pet_breed' => order_value($payload, 'pet', 'breed', 100),
-        'pet_address' => order_value($payload, 'pet', 'address', 255),
-        'pet_phone' => order_value($payload, 'pet', 'phone', 50),
+        'pet_name' => $petName,
+        'pet_birthday' => $petBirthday,
+        'pet_breed' => $petBreed,
+        'pet_address' => $petAddress,
+        'pet_phone' => $petPhone,
+        'pet_photo_path' => save_order_photo($orderUid, $photo),
         'customer_name' => $customerName,
         'customer_address' => $customerAddress,
         'customer_phone' => $customerPhone,
@@ -71,13 +135,13 @@ function insert_order(PDO $pdo, array $order): int
 {
     $sql = 'INSERT INTO orders (
         order_uid, payment_status, payment_provider, size_key, size_title, size_value, size_price,
-        pet_name, pet_birthday, pet_breed, pet_address, pet_phone,
+        pet_name, pet_birthday, pet_breed, pet_address, pet_phone, pet_photo_path,
         customer_name, customer_address, customer_phone,
         delivery_type, delivery_service, pickup_address,
         amount, raw_payload
     ) VALUES (
         :order_uid, :payment_status, :payment_provider, :size_key, :size_title, :size_value, :size_price,
-        :pet_name, :pet_birthday, :pet_breed, :pet_address, :pet_phone,
+        :pet_name, :pet_birthday, :pet_breed, :pet_address, :pet_phone, :pet_photo_path,
         :customer_name, :customer_address, :customer_phone,
         :delivery_type, :delivery_service, :pickup_address,
         :amount, :raw_payload
@@ -97,6 +161,7 @@ function insert_order(PDO $pdo, array $order): int
         ':pet_breed' => $order['pet_breed'],
         ':pet_address' => $order['pet_address'],
         ':pet_phone' => $order['pet_phone'],
+        ':pet_photo_path' => $order['pet_photo_path'],
         ':customer_name' => $order['customer_name'],
         ':customer_address' => $order['customer_address'],
         ':customer_phone' => $order['customer_phone'],

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-const MAX_JSON_BODY_BYTES = 1048576;
+const MAX_JSON_BODY_BYTES = 12582912;
 
 function send_security_headers(): void
 {

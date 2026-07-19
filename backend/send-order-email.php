@@ -22,6 +22,19 @@ function delivery_type_label(string $type): string
     return $type === 'avito' ? 'Заказ через Авито' : 'Обычная доставка';
 }
 
+function order_photo_absolute_path(array $order): ?string
+{
+    $relativePath = trim((string) ($order['pet_photo_path'] ?? ''));
+
+    if ($relativePath === '' || str_contains($relativePath, '..')) {
+        return null;
+    }
+
+    $absolutePath = __DIR__ . '/' . ltrim($relativePath, '/\\');
+
+    return is_file($absolutePath) ? $absolutePath : null;
+}
+
 function build_order_email_plain(array $order): string
 {
     return implode("\n", [
@@ -35,6 +48,7 @@ function build_order_email_plain(array $order): string
         'Порода: ' . order_field($order, 'pet_breed'),
         'Место жительства: ' . order_field($order, 'pet_address'),
         'Телефон на адреснике: ' . order_field($order, 'pet_phone'),
+        'Фото питомца: ' . (order_photo_absolute_path($order) ? 'во вложении' : 'не найдено'),
         '',
         'Данные получателя',
         'ФИО: ' . order_field($order, 'customer_name'),
@@ -67,6 +81,7 @@ function build_order_email_html(array $order): string
             'Порода' => order_field($order, 'pet_breed'),
             'Место жительства' => order_field($order, 'pet_address'),
             'Телефон на адреснике' => order_field($order, 'pet_phone'),
+            'Фото питомца' => order_photo_absolute_path($order) ? 'во вложении' : 'не найдено',
         ],
         'Данные получателя' => [
             'ФИО' => order_field($order, 'customer_name'),
@@ -139,6 +154,13 @@ function send_order_email(array $order): void
         $mail->isHTML(true);
         $mail->Body = build_order_email_html($order);
         $mail->AltBody = build_order_email_plain($order);
+
+        $photoPath = order_photo_absolute_path($order);
+
+        if ($photoPath !== null) {
+            $mail->addAttachment($photoPath, 'pet-photo-order-' . order_field($order, 'id') . '.' . pathinfo($photoPath, PATHINFO_EXTENSION));
+        }
+
         $mail->send();
     } catch (MailException $error) {
         throw new RuntimeException('Failed to send order email: ' . $error->getMessage(), 0, $error);

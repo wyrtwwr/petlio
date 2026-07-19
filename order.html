@@ -53,6 +53,10 @@
       Оплата не была завершена. Проверьте данные заказа и попробуйте перейти к оплате еще раз.
     </p>
 
+    <p class="order-notice order-notice-error" id="address-tag-required-message" hidden>
+      Заполните все поля адресника и загрузите фото питомца, чтобы перейти к оплате.
+    </p>
+
     <section class="order-layout">
       <aside class="order-summary" aria-label="Данные адресника">
         <h2>Ваш адресник</h2>
@@ -75,27 +79,27 @@
         <dl class="summary-list">
           <div class="summary-row">
             <dt>Размер</dt>
-            <dd><input id="summary-size" data-summary-field="size" data-summary-key="title" type="text" placeholder="Не указано"></dd>
+            <dd><input id="summary-size" data-summary-field="size" data-summary-key="title" type="text" placeholder="Не указано" required></dd>
           </div>
           <div class="summary-row">
             <dt>Имя питомца</dt>
-            <dd><input id="summary-pet-name" data-summary-field="pet" data-summary-key="name" type="text" placeholder="Не указано"></dd>
+            <dd><input id="summary-pet-name" data-summary-field="pet" data-summary-key="name" type="text" placeholder="Не указано" required></dd>
           </div>
           <div class="summary-row">
             <dt>Дата рождения</dt>
-            <dd><input id="summary-pet-birthday" data-summary-field="pet" data-summary-key="birthday" type="text" placeholder="Не указано"></dd>
+            <dd><input id="summary-pet-birthday" data-summary-field="pet" data-summary-key="birthday" type="text" placeholder="Не указано" required></dd>
           </div>
           <div class="summary-row">
             <dt>Порода</dt>
-            <dd><input id="summary-pet-breed" data-summary-field="pet" data-summary-key="breed" type="text" placeholder="Не указано"></dd>
+            <dd><input id="summary-pet-breed" data-summary-field="pet" data-summary-key="breed" type="text" placeholder="Не указано" required></dd>
           </div>
           <div class="summary-row">
             <dt>Место жительства</dt>
-            <dd><textarea id="summary-pet-address" data-summary-field="pet" data-summary-key="address" rows="2" placeholder="Не указано"></textarea></dd>
+            <dd><textarea id="summary-pet-address" data-summary-field="pet" data-summary-key="address" rows="2" placeholder="Не указано" required></textarea></dd>
           </div>
           <div class="summary-row">
             <dt>Телефон на адреснике</dt>
-            <dd><input id="summary-pet-phone" data-summary-field="pet" data-summary-key="phone" type="tel" placeholder="Не указано"></dd>
+            <dd><input id="summary-pet-phone" data-summary-field="pet" data-summary-key="phone" type="tel" placeholder="Не указано" required></dd>
           </div>
         </dl>
       </aside>
