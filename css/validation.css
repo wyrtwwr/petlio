@@ -1,0 +1,65 @@
+.required-mark {
+  color: #c62828;
+  font: inherit;
+}
+
+.field-error {
+  width: 100%;
+  max-width: 100%;
+  margin: 6px 0 0;
+  color: #b02222;
+  font-family: "PT Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+.field input[aria-invalid="true"],
+.summary-list input[aria-invalid="true"],
+.summary-list textarea[aria-invalid="true"] {
+  border-color: #c62828;
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.12);
+}
+
+.photo-drop.is-invalid,
+.summary-photo-upload.is-invalid {
+  border-color: #c62828;
+  background: #fff3f0;
+}
+
+.size-picker.is-invalid .size-option,
+.summary-size-picker.is-invalid button {
+  border-color: rgba(198, 40, 40, 0.62);
+}
+
+.constructor-form__group > .field-error {
+  width: min(100%, 340px);
+  margin-left: 28px;
+}
+
+.field .field-error,
+.summary-list .field-error {
+  margin-top: 0;
+}
+
+.field-error--size {
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .constructor-form__group > .field-error {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .field-error {
+    font-size: 11px;
+  }
+}

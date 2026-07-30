@@ -202,7 +202,9 @@ function robokassa_build_payment_url(array $config, array $order, int $invId): s
         'MerchantLogin' => $merchantLogin,
         'OutSum' => $outSum,
         'InvId' => (string) $invId,
-        'Description' => 'Оплата заказа Petlio №' . $invId,
+        'Description' => 'Оплата заказа Petlio №' . (
+            trim((string) ($order['public_number'] ?? '')) ?: (string) $invId
+        ),
         'Culture' => 'ru',
         'Encoding' => 'utf-8',
     ];

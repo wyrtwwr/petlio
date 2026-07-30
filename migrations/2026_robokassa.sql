@@ -25,11 +25,36 @@ END//
 
 CALL petlio_add_column_if_missing('payment_provider', 'payment_provider VARCHAR(32) DEFAULT NULL AFTER payment_id')//
 CALL petlio_add_column_if_missing('robokassa_inv_id', 'robokassa_inv_id BIGINT UNSIGNED DEFAULT NULL AFTER payment_provider')//
+CALL petlio_add_column_if_missing('checkout_request_id', 'checkout_request_id VARCHAR(64) DEFAULT NULL AFTER order_uid')//
 CALL petlio_add_column_if_missing('pet_photo_path', 'pet_photo_path VARCHAR(255) DEFAULT NULL AFTER pet_phone')//
+CALL petlio_add_column_if_missing('customer_email', 'customer_email VARCHAR(254) DEFAULT NULL AFTER customer_address')//
 CALL petlio_add_column_if_missing('email_sent_at', 'email_sent_at DATETIME DEFAULT NULL AFTER email_sent')//
 CALL petlio_add_column_if_missing('updated_at', 'updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER paid_at')//
 
 DROP PROCEDURE petlio_add_column_if_missing//
+
+-- Historical installations have a required customer_phone column. Keep its
+-- data, but allow new email-only orders to be inserted without a phone value.
+DROP PROCEDURE IF EXISTS petlio_make_customer_phone_optional//
+CREATE PROCEDURE petlio_make_customer_phone_optional()
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE()
+          AND TABLE_NAME = 'orders'
+          AND COLUMN_NAME = 'customer_phone'
+          AND IS_NULLABLE = 'NO'
+    ) THEN
+        SET @ddl = 'ALTER TABLE orders MODIFY COLUMN customer_phone VARCHAR(50) DEFAULT NULL';
+        PREPARE statement FROM @ddl;
+        EXECUTE statement;
+        DEALLOCATE PREPARE statement;
+    END IF;
+END//
+
+CALL petlio_make_customer_phone_optional()//
+DROP PROCEDURE petlio_make_customer_phone_optional//
 
 DROP PROCEDURE IF EXISTS petlio_add_index_if_missing//
 CREATE PROCEDURE petlio_add_index_if_missing(
@@ -52,6 +77,7 @@ BEGIN
 END//
 
 CALL petlio_add_index_if_missing('uq_orders_robokassa_inv_id', 'UNIQUE KEY uq_orders_robokassa_inv_id (robokassa_inv_id)')//
+CALL petlio_add_index_if_missing('uq_orders_checkout_request_id', 'UNIQUE KEY uq_orders_checkout_request_id (checkout_request_id)')//
 CALL petlio_add_index_if_missing('idx_orders_payment_provider_status', 'KEY idx_orders_payment_provider_status (payment_provider, payment_status)')//
 
 DROP PROCEDURE petlio_add_index_if_missing//

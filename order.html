@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -20,6 +21,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Neucha&family=PT+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/order.css">
+  <link rel="stylesheet" href="css/validation.css">
   <link rel="stylesheet" href="css/cookie-consent.css">
 </head>
 <body>
@@ -35,6 +37,7 @@
         <a href="index.html#sizes">Размеры</a>
         <a href="create.html#constructor">Конструктор</a>
         <a href="order.html" aria-current="page">Заказать</a>
+        <a href="/my-orders/">Мои заказы</a>
         <a href="privacy.html">Политика</a>
       </nav>
     </div>
@@ -65,12 +68,13 @@
           <img id="summary-pet-photo" alt="Фото питомца">
         </div>
 
-        <label class="summary-photo-upload">
-          <input id="summary-photo-input" type="file" accept="image/png,image/jpeg">
-          <span>Заменить фото</span>
+        <label class="summary-photo-upload" data-validation-control="photo">
+          <input id="summary-photo-input" type="file" accept="image/png,image/jpeg" aria-describedby="summary-photo-error">
+          <span><span id="summary-photo-action">Загрузить фото</span> <b class="required-mark" aria-hidden="true">*</b></span>
         </label>
+        <p class="field-error" id="summary-photo-error" data-validation-error="photo" role="alert" hidden></p>
 
-        <div class="summary-size-picker" id="summary-size-picker" role="group" aria-label="Выберите размер адресника">
+        <div class="summary-size-picker" id="summary-size-picker" role="group" aria-label="Выберите размер адресника" aria-describedby="summary-size-error" data-validation-control="size">
           <button type="button" data-size="small">Маленький</button>
           <button type="button" data-size="medium">Средний</button>
           <button type="button" data-size="large">Большой</button>
@@ -78,33 +82,51 @@
 
         <dl class="summary-list">
           <div class="summary-row">
-            <dt>Размер</dt>
-            <dd><input id="summary-size" data-summary-field="size" data-summary-key="title" type="text" placeholder="Не указано" required></dd>
+            <dt>Размер <b class="required-mark" aria-hidden="true">*</b></dt>
+            <dd>
+              <input id="summary-size" type="text" placeholder="Не указано" aria-describedby="summary-size-error" readonly>
+              <p class="field-error" id="summary-size-error" data-validation-error="size" role="alert" hidden></p>
+            </dd>
           </div>
           <div class="summary-row">
-            <dt>Имя питомца</dt>
-            <dd><input id="summary-pet-name" data-summary-field="pet" data-summary-key="name" type="text" placeholder="Не указано" required></dd>
+            <dt>Имя питомца <b class="required-mark" aria-hidden="true">*</b></dt>
+            <dd>
+              <input id="summary-pet-name" data-summary-field="pet" data-summary-key="name" data-validation-control="name" type="text" placeholder="Не указано" aria-describedby="summary-pet-name-error" required>
+              <p class="field-error" id="summary-pet-name-error" data-validation-error="name" role="alert" hidden></p>
+            </dd>
           </div>
           <div class="summary-row">
-            <dt>Дата рождения</dt>
-            <dd><input id="summary-pet-birthday" data-summary-field="pet" data-summary-key="birthday" type="text" placeholder="Не указано" required></dd>
+            <dt>Дата рождения <b class="required-mark" aria-hidden="true">*</b></dt>
+            <dd>
+              <input id="summary-pet-birthday" data-summary-field="pet" data-summary-key="birthday" data-validation-control="birthday" type="text" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" aria-describedby="summary-pet-birthday-error" required>
+              <p class="field-error" id="summary-pet-birthday-error" data-validation-error="birthday" role="alert" hidden></p>
+            </dd>
           </div>
           <div class="summary-row">
-            <dt>Порода</dt>
-            <dd><input id="summary-pet-breed" data-summary-field="pet" data-summary-key="breed" type="text" placeholder="Не указано" required></dd>
+            <dt>Порода <b class="required-mark" aria-hidden="true">*</b></dt>
+            <dd>
+              <input id="summary-pet-breed" data-summary-field="pet" data-summary-key="breed" data-validation-control="breed" type="text" placeholder="Не указано" aria-describedby="summary-pet-breed-error" required>
+              <p class="field-error" id="summary-pet-breed-error" data-validation-error="breed" role="alert" hidden></p>
+            </dd>
           </div>
           <div class="summary-row">
-            <dt>Место жительства</dt>
-            <dd><textarea id="summary-pet-address" data-summary-field="pet" data-summary-key="address" rows="2" placeholder="Не указано" required></textarea></dd>
+            <dt>Место жительства <b class="required-mark" aria-hidden="true">*</b></dt>
+            <dd>
+              <textarea id="summary-pet-address" data-summary-field="pet" data-summary-key="address" data-validation-control="address" rows="2" placeholder="Не указано" aria-describedby="summary-pet-address-error" required></textarea>
+              <p class="field-error" id="summary-pet-address-error" data-validation-error="address" role="alert" hidden></p>
+            </dd>
           </div>
           <div class="summary-row">
-            <dt>Телефон на адреснике</dt>
-            <dd><input id="summary-pet-phone" data-summary-field="pet" data-summary-key="phone" type="tel" placeholder="Не указано" required></dd>
+            <dt>Телефон на адреснике <b class="required-mark" aria-hidden="true">*</b></dt>
+            <dd>
+              <input id="summary-pet-phone" data-summary-field="pet" data-summary-key="phone" data-validation-control="phone" type="tel" inputmode="tel" placeholder="+7 (999) 999-99-99" aria-describedby="summary-pet-phone-error" required>
+              <p class="field-error" id="summary-pet-phone-error" data-validation-error="phone" role="alert" hidden></p>
+            </dd>
           </div>
         </dl>
       </aside>
 
-      <form class="order-form" id="order-form">
+      <form class="order-form" id="order-form" novalidate>
         <section class="order-card">
           <h2>Данные получателя</h2>
 
@@ -119,13 +141,17 @@
           </label>
 
           <label class="order-field">
-            <span>Мобильный телефон для уведомлений</span>
-            <input id="customer-phone" name="customerPhone" type="tel" autocomplete="tel" required>
+            <span>Электронная почта для уведомлений</span>
+            <input id="customer-email" name="customerEmail" type="email" autocomplete="email" maxlength="254" required>
           </label>
         </section>
 
         <section class="order-card">
           <h2>Способ доставки</h2>
+          <p class="delivery-cost-note">
+            Доставка по России — 200 ₽. Стоимость добавляется к цене адресника при оформлении заказа.
+            Сроки зависят от выбранной службы доставки.
+          </p>
 
           <div class="delivery-options">
             <label class="delivery-option">
@@ -174,6 +200,27 @@
           </a>
         </section>
 
+        <section class="order-card order-pricing" aria-labelledby="order-pricing-title">
+          <h2 id="order-pricing-title">Стоимость заказа</h2>
+          <dl class="order-pricing__list" aria-live="polite">
+            <div>
+              <dt>Адресник</dt>
+              <dd id="order-product-price">—</dd>
+            </div>
+            <div>
+              <dt>Доставка</dt>
+              <dd id="order-delivery-price">200 ₽</dd>
+            </div>
+            <div class="order-pricing__total">
+              <dt>Итого к оплате</dt>
+              <dd id="order-total-price">—</dd>
+            </div>
+          </dl>
+          <p class="order-pricing__terms">
+            Доставка оплачивается вместе с заказом. Итоговая сумма будет показана до перехода на страницу оплаты.
+          </p>
+        </section>
+
         <label class="consent-field">
           <input id="privacy-consent" name="privacyConsent" type="checkbox" required>
           <span>
@@ -183,7 +230,7 @@
           </span>
         </label>
 
-        <button class="order-submit" type="submit" disabled>
+        <button class="order-submit" type="submit">
           <span>Перейти к оплате</span>
           <img src="assets/icons/paw.svg" alt="">
         </button>
@@ -191,6 +238,7 @@
     </section>
   </main>
 
+  <script src="js/address-tag-validation.js"></script>
   <script src="js/order.js"></script>
   <script src="js/cookie-consent.js"></script>
 </body>

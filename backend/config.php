@@ -55,9 +55,38 @@ if (!function_exists('env_bool')) {
     }
 }
 
+if (!function_exists('env_int')) {
+    function env_int(string $key, int $default, int $minimum = 1, int $maximum = PHP_INT_MAX): int
+    {
+        $value = env_value($key);
+
+        if ($value === null) {
+            return $default;
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_INT) === false) {
+            throw new RuntimeException(sprintf('%s must be an integer value.', $key));
+        }
+
+        $parsed = (int) $value;
+
+        if ($parsed < $minimum || $parsed > $maximum) {
+            throw new RuntimeException(sprintf(
+                '%s must be between %d and %d.',
+                $key,
+                $minimum,
+                $maximum
+            ));
+        }
+
+        return $parsed;
+    }
+}
+
 return [
     'app_name' => 'PETLIO',
     'app_url' => rtrim(env_value('APP_URL', 'http://localhost') ?? 'http://localhost', '/'),
+    'app_key' => env_value('APP_KEY', ''),
 
     'db' => [
         'host' => env_value('DB_HOST', 'localhost'),
@@ -85,6 +114,23 @@ return [
     ],
 
     'order_email' => env_value('ORDER_EMAIL', 'ppetfoli@mail.ru'),
+    'support_email' => env_value('SUPPORT_EMAIL', 'Ppetfolio@mail.ru'),
+
+    'magic_link' => [
+        'ttl_seconds' => env_int('MAGIC_LINK_TTL_SECONDS', 1800, 300, 86400),
+        'request_limit' => env_int('MAGIC_LINK_REQUEST_LIMIT', 5, 1, 100),
+        'request_window_seconds' => env_int('MAGIC_LINK_REQUEST_WINDOW_SECONDS', 900, 60, 86400),
+    ],
+
+    'session' => [
+        'cookie_secure' => env_bool('SESSION_COOKIE_SECURE', true),
+        'lifetime_seconds' => env_int('MY_ORDERS_SESSION_LIFETIME', 43200, 900, 604800),
+    ],
+
+    'photo_storage_path' => env_value(
+        'PET_PHOTO_STORAGE_PATH',
+        dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'petlio-private' . DIRECTORY_SEPARATOR . 'order-photos'
+    ),
 
     'smtp' => [
         'host' => env_value('SMTP_HOST', ''),

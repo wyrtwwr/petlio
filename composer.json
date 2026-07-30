@@ -5,6 +5,10 @@
     "vlucas/phpdotenv": "^5.6"
   },
   "scripts": {
-    "test": "php tests/robokassa-test.php"
+    "test": [
+      "php tests/robokassa-test.php",
+      "php tests/address-tag-validation-test.php",
+      "php tests/my-orders-test.php"
+    ]
   }
 }

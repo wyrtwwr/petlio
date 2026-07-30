@@ -4,6 +4,19 @@ declare(strict_types=1);
 
 const MAX_JSON_BODY_BYTES = 12582912;
 
+final class ApiRequestException extends RuntimeException
+{
+    public int $status;
+    public array $details;
+
+    public function __construct(string $message, int $status = 400, array $details = [])
+    {
+        parent::__construct($message);
+        $this->status = $status;
+        $this->details = $details;
+    }
+}
+
 function send_security_headers(): void
 {
     header('X-Content-Type-Options: nosniff');
@@ -39,37 +52,66 @@ function get_client_ip(): string
     return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
 
-function basic_rate_limit(string $bucket = 'default', int $limit = 20, int $windowSeconds = 60): void
+function rate_limit_allows(string $bucket = 'default', int $limit = 20, int $windowSeconds = 60): bool
 {
     $dir = sys_get_temp_dir() . '/petlio-rate-limit';
 
-    if (!is_dir($dir)) {
-        mkdir($dir, 0700, true);
+    if (!is_dir($dir) && !mkdir($dir, 0700, true) && !is_dir($dir)) {
+        throw new RuntimeException('Failed to create rate limit directory.');
     }
 
     $key = hash('sha256', $bucket . '|' . get_client_ip());
     $file = $dir . '/' . $key . '.json';
     $now = time();
     $state = ['start' => $now, 'count' => 0];
+    $handle = fopen($file, 'c+');
 
-    if (is_file($file)) {
-        $decoded = json_decode((string) file_get_contents($file), true);
+    if ($handle === false) {
+        throw new RuntimeException('Failed to open rate limit state.');
+    }
+
+    try {
+        if (!flock($handle, LOCK_EX)) {
+            throw new RuntimeException('Failed to lock rate limit state.');
+        }
+
+        $contents = stream_get_contents($handle);
+        $decoded = json_decode(is_string($contents) ? $contents : '', true);
 
         if (is_array($decoded)) {
             $state = array_merge($state, $decoded);
         }
+
+        if (($now - (int) $state['start']) >= $windowSeconds) {
+            $state = ['start' => $now, 'count' => 0];
+        }
+
+        $state['count'] = (int) $state['count'] + 1;
+        rewind($handle);
+        ftruncate($handle, 0);
+        fwrite($handle, (string) json_encode($state));
+        fflush($handle);
+        flock($handle, LOCK_UN);
+    } finally {
+        fclose($handle);
     }
 
-    if (($now - (int) $state['start']) >= $windowSeconds) {
-        $state = ['start' => $now, 'count' => 0];
+    return $state['count'] <= $limit;
+}
+
+function basic_rate_limit(string $bucket = 'default', int $limit = 20, int $windowSeconds = 60): void
+{
+    if (rate_limit_allows($bucket, $limit, $windowSeconds)) {
+        return;
     }
 
-    $state['count'] = (int) $state['count'] + 1;
-    file_put_contents($file, json_encode($state), LOCK_EX);
+    json_response(['message' => 'Слишком много запросов. Попробуйте позже.'], 429);
+}
 
-    if ($state['count'] > $limit) {
-        json_response(['message' => 'Слишком много запросов. Попробуйте позже.'], 429);
-    }
+function no_store_headers(): void
+{
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
 }
 
 function require_json_request(): array
@@ -109,6 +151,13 @@ function require_json_request(): array
 
 function handle_endpoint_error(Throwable $error): void
 {
+    if ($error instanceof ApiRequestException) {
+        json_response(
+            array_merge(['message' => $error->getMessage()], $error->details),
+            $error->status
+        );
+    }
+
     error_log($error->getMessage());
     json_response(['message' => 'Внутренняя ошибка сервера. Попробуйте позже.'], 500);
 }

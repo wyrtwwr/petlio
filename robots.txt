@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Host: petfolio.ru
+Sitemap: https://petfolio.ru/sitemap.xml

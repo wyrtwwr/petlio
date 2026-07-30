@@ -360,6 +360,17 @@ body {
   gap: 12px;
 }
 
+.delivery-cost-note {
+  margin: -4px 0 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fff8df;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .delivery-option {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -441,6 +452,49 @@ body {
 .order-form[data-delivery="avito"] .avito-link {
   display: inline-flex;
   align-items: center;
+}
+
+.order-pricing__list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.order-pricing__list > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.order-pricing__list dt,
+.order-pricing__list dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.order-pricing__list dd {
+  text-align: right;
+}
+
+.order-pricing__total {
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(26, 26, 26, 0.28);
+}
+
+.order-pricing__total dt,
+.order-pricing__total dd {
+  font-size: 19px;
+}
+
+.order-pricing__terms {
+  margin: 16px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .order-submit {

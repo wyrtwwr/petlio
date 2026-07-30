@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -36,7 +37,8 @@
         <a href="#home">Главная</a>
         <a href="#sizes">Размеры</a>
         <a href="create.html#constructor">Конструктор</a>
-        <a href="order.html">Заказать</a>
+        <a href="create.html#constructor">Заказать</a>
+        <a href="/my-orders/">Мои заказы</a>
         <a href="privacy.html">Политика</a>
       </nav>
     </div>
@@ -57,7 +59,7 @@
             <span>Создать адресник</span>
             <span class="paw" aria-hidden="true"><img src="assets/icons/paw.svg" alt=""></span>
           </a>
-          <a class="btn_secondary" href="order.html">
+          <a class="btn_secondary" href="create.html#constructor">
             <span>Сделать заказ</span>
           </a>
         </div>
@@ -113,7 +115,7 @@
           </div>
         </article>
 
-        <article class="size-card size-card--medium is-selected" tabindex="0" role="button" aria-pressed="true" data-size="medium" data-size-title="Средний" data-size-value="4 × 2,5 см" data-size-price="1299 ₽">
+        <article class="size-card size-card--medium" tabindex="0" role="button" aria-pressed="false" data-size="medium" data-size-title="Средний" data-size-value="4 × 2,5 см" data-size-price="1299 ₽">
           <div class="size-card__badge">Самый популярный</div>
 
           <button class="size-card__wish" type="button" aria-label="В избранное">
@@ -164,39 +166,63 @@
     <section class="client-reviews" aria-labelledby="client-reviews-title">
       <div class="client-reviews__header">
         <h2 id="client-reviews-title">Что говорят наши клиенты</h2>
-        <a href="https://www.avito.ru/user/9e91a91a738f7db2ba79a254ac720f53/profile?id=8047197938&src=item&page_from=from_item_card_icon&iid=8047197938#open-reviews-list">Смотреть все отзывы →</a>
+        <div class="client-reviews__actions">
+          <a href="https://www.avito.ru/user/9e91a91a738f7db2ba79a254ac720f53/profile?id=8047197938&src=item&page_from=from_item_card_icon&iid=8047197938#open-reviews-list">Смотреть все отзывы →</a>
+          <div class="client-reviews__controls" aria-label="Управление отзывами">
+            <button class="client-reviews__arrow client-reviews__arrow--prev" type="button" aria-label="Предыдущие отзывы" aria-controls="client-reviews-track">←</button>
+            <button class="client-reviews__arrow client-reviews__arrow--next" type="button" aria-label="Следующие отзывы" aria-controls="client-reviews-track">→</button>
+          </div>
+        </div>
       </div>
 
-      <div class="client-reviews__grid">
-        <article class="review-card">
-          <img class="review-card__avatar" src="assets/images/ava1.jpg" alt="Анна и Бусинка">
-          <div class="review-card__content">
-            <h3>Enigma Mask и Руби</h3>
-            <div class="review-card__rating" aria-label="5 из 5">★★★★★</div>
-            <p>Отличный адресник) очень рады что заказали именно у данного продавца! Рекомендуем </p>
-          </div>
-       
-        </article>
+      <div class="client-reviews__carousel" data-reviews-carousel>
+        <div class="client-reviews__viewport" tabindex="0" aria-label="Карусель отзывов">
+          <div class="client-reviews__track" id="client-reviews-track">
+            <article class="review-card">
+              <img class="review-card__avatar" src="assets/images/ava1.jpg" alt="Enigma Mask и Руби">
+              <div class="review-card__content">
+                <h3>Enigma Mask и Руби</h3>
+                <div class="review-card__rating" aria-label="5 из 5">★★★★★</div>
+                <p>Отличный адресник) очень рады что заказали именно у данного продавца! Рекомендуем</p>
+              </div>
+            </article>
 
-        <article class="review-card">
-          <img class="review-card__avatar" src="assets/images/ava2.jpg" alt="Михаил и Рекс">
-          <div class="review-card__content">
-            <h3>Антон и Grigory</h3>
-            <div class="review-card__rating" aria-label="5 из 5">★★★★★</div>
-            <p>Все отлично. Сделали хорошо. В подарок положили наклейки. Выглядит красиво</p>
-          </div>
-    
-        </article>
+            <article class="review-card">
+              <img class="review-card__avatar" src="assets/images/ava2.jpg" alt="Антон и Grigory">
+              <div class="review-card__content">
+                <h3>Антон и Grigory</h3>
+                <div class="review-card__rating" aria-label="5 из 5">★★★★★</div>
+                <p>Все отлично. Сделали хорошо. В подарок положили наклейки. Выглядит красиво</p>
+              </div>
+            </article>
 
-        <article class="review-card">
-          <img class="review-card__avatar" src="assets/images/ava3.jpg" alt="Екатерина и Локи">
-          <div class="review-card__content">
-            <h3>Полина и Бетти</h3>
-            <div class="review-card__rating" aria-label="5 из 5">★★★★★</div>
-            <p>Классный адресник! Очень довольны качеством и дизайном. Спасибо за отличный сервис! Сайт суперр!</p>
+            <article class="review-card">
+              <img class="review-card__avatar" src="assets/images/ava3.jpg" alt="Полина и Бетти">
+              <div class="review-card__content">
+                <h3>Полина и Бетти</h3>
+                <div class="review-card__rating" aria-label="5 из 5">★★★★★</div>
+                <p>Классный адресник! Очень довольны качеством и дизайном. Спасибо за отличный сервис! Сайт суперр!</p>
+              </div>
+            </article>
+
+            <article class="review-card review-card--long">
+              <img class="review-card__avatar" src="assets/images/ava4.png" alt="Ольга и Либерт">
+              <div class="review-card__content">
+                <h3>Ольга и Либерт</h3>
+                <div class="review-card__rating" aria-label="5 из 5">★★★★★</div>
+                <p class="review-card__text review-card__text--collapsed" id="review-olga-text">
+                  Прекрасный индивидуальный адресник 😍 Нигде не видела похожей реализации. Быстро договорились с девушкой: она предложила разные варианты исполнения и размеры. Изготовление заняло примерно неделю, по результату мне выслали фото получившегося адресника. Очень довольна исполнением и результатом! Также девушка положила в подарок кольцо для адресника, бумажный вариант паспорта и две милые 3D-наклейки с фотографией нашей собаки 🥰
+                </p>
+                <button class="review-card__more" type="button" aria-expanded="false" aria-controls="review-olga-text">Читать полностью</button>
+              </div>
+            </article>
           </div>
-        
-        </article>
+        </div>
+
+        <div class="client-reviews__pagination">
+          <div class="client-reviews__dots" aria-label="Выбор страницы отзывов"></div>
+          <p class="client-reviews__status" aria-live="polite"></p>
+        </div>
       </div>
     </section>
 

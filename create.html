@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -22,6 +23,7 @@
   <link rel="stylesheet" href="css/style2.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/validation.css">
   <link rel="stylesheet" href="css/cookie-consent.css">
 </head>
 <body>
@@ -36,7 +38,8 @@
         <a href="index.html">Главная</a>
         <a href="#sizes">Размеры</a>
         <a href="#constructor">Конструктор</a>
-        <a href="order.html">Заказать</a>
+        <a href="#constructor">Заказать</a>
+        <a href="/my-orders/">Мои заказы</a>
         <a href="privacy.html">Политика</a>
       </nav>
     </div>
@@ -61,46 +64,52 @@
       <div class="constructor__panel">
         <form class="constructor-form" id="pet-form">
           <div class="constructor-form__group">
-            <h2 class="constructor-form__title"><span>1.</span> ЗАГРУЗИТЕ ФОТО ПИТОМЦА</h2>
+            <h2 class="constructor-form__title"><span>1.</span> ЗАГРУЗИТЕ ФОТО ПИТОМЦА <b class="required-mark" aria-hidden="true">*</b></h2>
 
-            <label class="photo-drop" for="pet-photo">
-              <input id="pet-photo" type="file" accept="image/png,image/jpeg" required>
+            <label class="photo-drop" for="pet-photo" data-validation-control="photo">
+              <input id="pet-photo" type="file" accept="image/png,image/jpeg" aria-describedby="pet-photo-error" required>
               <span class="photo-drop__icon" aria-hidden="true"></span>
               <span class="photo-drop__copy">
                 <strong>Нажмите, что бы загрузить<br>или перетащите фото сюда</strong>
                 <small>JPG, PNG, до 10МБ</small>
               </span>
             </label>
+            <p class="field-error" id="pet-photo-error" data-validation-error="photo" role="alert" hidden></p>
           </div>
 
           <div class="constructor-form__group constructor-form__group--data">
             <h2 class="constructor-form__title"><span>2.</span> ЗАГРУЗИТЕ ДАННЫЕ</h2>
 
             <label class="field field--wide">
-              <span>Имя питомца</span>
-              <input id="pet-name" type="text" placeholder="Например: Чиж" maxlength="22" autocomplete="off" required>
+              <span>Имя питомца <b class="required-mark" aria-hidden="true">*</b></span>
+              <input id="pet-name" type="text" placeholder="Например: Чиж" maxlength="22" autocomplete="off" aria-describedby="pet-name-error" data-validation-control="name" required>
+              <p class="field-error" id="pet-name-error" data-validation-error="name" role="alert" hidden></p>
             </label>
 
             <div class="field-row">
               <label class="field">
-                <span>Дата рождения:</span>
-                <input id="pet-birthday" type="text" placeholder="дд.мм.гггг" maxlength="10" autocomplete="off" required>
+                <span>Дата рождения: <b class="required-mark" aria-hidden="true">*</b></span>
+                <input id="pet-birthday" type="text" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" autocomplete="off" aria-describedby="pet-birthday-error" data-validation-control="birthday" required>
+                <p class="field-error" id="pet-birthday-error" data-validation-error="birthday" role="alert" hidden></p>
               </label>
 
               <label class="field">
-                <span>Порода:</span>
-                <input id="pet-breed" type="text" placeholder="Например: Пудель" maxlength="24" autocomplete="off" required>
+                <span>Порода: <b class="required-mark" aria-hidden="true">*</b></span>
+                <input id="pet-breed" type="text" placeholder="Например: Пудель" maxlength="24" autocomplete="off" aria-describedby="pet-breed-error" data-validation-control="breed" required>
+                <p class="field-error" id="pet-breed-error" data-validation-error="breed" role="alert" hidden></p>
               </label>
             </div>
 
             <label class="field field--wide">
-              <span>Место жительства:</span>
-              <input id="pet-address" type="text" placeholder="Например: г. Москва, ул. Ленина, д. 67, кв 108" maxlength="62" autocomplete="off" required>
+              <span>Место жительства: <b class="required-mark" aria-hidden="true">*</b></span>
+              <input id="pet-address" type="text" placeholder="Например: г. Москва, ул. Ленина, д. 67, кв 108" maxlength="62" autocomplete="off" aria-describedby="pet-address-error" data-validation-control="address" required>
+              <p class="field-error" id="pet-address-error" data-validation-error="address" role="alert" hidden></p>
             </label>
 
             <label class="field field--wide">
-              <span>Телефон:</span>
-              <input id="pet-phone" type="tel" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="off" pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}(, \+7 \(\d{3}\) \d{3}-\d{2}-\d{2})?$" title="Введите один номер: +7 (999) 999-99-99 или два номера через запятую и пробел" required>
+              <span>Телефон: <b class="required-mark" aria-hidden="true">*</b></span>
+              <input id="pet-phone" type="tel" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="off" pattern="^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}(, \+7 \(\d{3}\) \d{3}-\d{2}-\d{2})?$" title="Введите один номер: +7 (999) 999-99-99 или два номера через запятую и пробел" aria-describedby="pet-phone-error" data-validation-control="phone" required>
+              <p class="field-error" id="pet-phone-error" data-validation-error="phone" role="alert" hidden></p>
             </label>
 
             <button class="passport-button" type="button" id="passport-button">
@@ -136,22 +145,23 @@
             </div>
           </div>
 
-          <div class="size-picker" role="group" aria-label="Выберите размер адресника">
-            <h3>ВЫБЕРИТЕ РАЗМЕР:</h3>
+          <div class="size-picker" role="group" aria-label="Выберите размер адресника" aria-describedby="pet-size-error" data-validation-control="size">
+            <h3>ВЫБЕРИТЕ РАЗМЕР: <b class="required-mark" aria-hidden="true">*</b></h3>
             <div class="size-picker__cards">
               <button class="size-option" type="button" data-size="small" aria-pressed="false">
                 <span>Маленький</span>
                 <small>3 x 2 см</small>
               </button>
-              <button class="size-option is-active" type="button" data-size="medium" aria-pressed="true">
+              <button class="size-option" type="button" data-size="medium" aria-pressed="false">
                 <span>Средний</span>
                 <small>4 x 2,5 см</small>
               </button>
               <button class="size-option" type="button" data-size="large" aria-pressed="false">
                 <span>Большой</span>
-                <small>3 x 5 см</small>
+                <small>5 x 3 см</small>
               </button>
             </div>
+            <p class="field-error field-error--size" id="pet-size-error" data-validation-error="size" role="alert" hidden></p>
           </div>
         </div>
       </div>
@@ -261,6 +271,7 @@
 
   </main>
 
+  <script src="js/address-tag-validation.js"></script>
   <script src="js/create.js"></script>
   <script src="js/slider.js"></script>
   <script src="js/cookie-consent.js"></script>

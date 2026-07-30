@@ -27,9 +27,9 @@ try {
         json_response(['message' => 'Order not found.'], 404);
     }
 
-    $status = (string) ($order['payment_status'] ?? 'pending');
+    $status = (string) ($order['payment_status'] ?? 'pending_payment');
     json_response([
-        'status' => $status === 'paid' ? 'paid' : 'pending',
+        'status' => order_status_has_confirmed_payment($status) ? 'paid' : 'pending',
     ]);
 } catch (Throwable $error) {
     handle_endpoint_error($error);

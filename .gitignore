@@ -2,5 +2,6 @@
 /vendor/
 /node_modules/
 /backend/logs/
-/backend/uploads/
+/backend/uploads/*
+!/backend/uploads/.htaccess
 *.log

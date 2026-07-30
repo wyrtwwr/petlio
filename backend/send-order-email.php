@@ -5,6 +5,8 @@ declare(strict_types=1);
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception as MailException;
 
+require_once __DIR__ . '/order-photo-storage.php';
+
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -24,21 +26,13 @@ function delivery_type_label(string $type): string
 
 function order_photo_absolute_path(array $order): ?string
 {
-    $relativePath = trim((string) ($order['pet_photo_path'] ?? ''));
-
-    if ($relativePath === '' || str_contains($relativePath, '..')) {
-        return null;
-    }
-
-    $absolutePath = __DIR__ . '/' . ltrim($relativePath, '/\\');
-
-    return is_file($absolutePath) ? $absolutePath : null;
+    return resolve_order_photo_absolute_path($order['pet_photo_path'] ?? null);
 }
 
 function build_order_email_plain(array $order): string
 {
     return implode("\n", [
-        'Новый оплаченный заказ PETLIO #' . order_field($order, 'order_uid'),
+        'Новый оплаченный заказ PETLIO #' . order_field($order, 'public_number'),
         '',
         'Ваш адресник',
         'Размер: ' . order_field($order, 'size_title') . ', ' . order_field($order, 'size_value'),
@@ -53,12 +47,13 @@ function build_order_email_plain(array $order): string
         'Данные получателя',
         'ФИО: ' . order_field($order, 'customer_name'),
         'Адрес: ' . order_field($order, 'customer_address'),
-        'Телефон: ' . order_field($order, 'customer_phone'),
+        'Электронная почта: ' . order_field($order, 'customer_email'),
         '',
         'Способ доставки',
         'Тип: ' . delivery_type_label(order_field($order, 'delivery_type')),
         'Служба доставки: ' . order_field($order, 'delivery_service'),
         'Пункт выдачи / адрес: ' . order_field($order, 'pickup_address'),
+        'Стоимость доставки: ' . order_field($order, 'delivery_price') . ' RUB',
         '',
         'Платеж',
         'order_uid: ' . order_field($order, 'order_uid'),
@@ -86,12 +81,13 @@ function build_order_email_html(array $order): string
         'Данные получателя' => [
             'ФИО' => order_field($order, 'customer_name'),
             'Адрес' => order_field($order, 'customer_address'),
-            'Телефон' => order_field($order, 'customer_phone'),
+            'Электронная почта' => order_field($order, 'customer_email'),
         ],
         'Способ доставки' => [
             'Тип' => delivery_type_label(order_field($order, 'delivery_type')),
             'Служба доставки' => order_field($order, 'delivery_service'),
             'Пункт выдачи / адрес' => order_field($order, 'pickup_address'),
+            'Стоимость доставки' => order_field($order, 'delivery_price') . ' RUB',
         ],
         'Платеж' => [
             'order_uid' => order_field($order, 'order_uid'),
@@ -104,7 +100,7 @@ function build_order_email_html(array $order): string
     ];
 
     $html = '<!doctype html><html><body style="font-family:Arial,sans-serif;color:#1a1a1a;">';
-    $html .= '<h1>Новый оплаченный заказ PETLIO #' . e(order_field($order, 'order_uid')) . '</h1>';
+    $html .= '<h1>Новый оплаченный заказ PETLIO #' . e(order_field($order, 'public_number')) . '</h1>';
 
     foreach ($rows as $section => $items) {
         $html .= '<h2>' . e($section) . '</h2><table cellpadding="8" cellspacing="0" border="1" style="border-collapse:collapse;border-color:#ddd;">';
@@ -121,10 +117,81 @@ function build_order_email_html(array $order): string
     return $html;
 }
 
-function send_order_email(array $order): void
+function build_customer_payment_email_plain(array $order, string $myOrdersUrl): string
 {
+    $lines = [
+        'Заказ №' . order_field($order, 'public_number') . ' успешно оплачен',
+        '',
+        'Номер заказа: ' . order_field($order, 'public_number'),
+        'Сумма: ' . order_field($order, 'amount') . ' RUB',
+    ];
+    $deliveryPrice = trim((string) ($order['delivery_price'] ?? ''));
+
+    if ($deliveryPrice !== '') {
+        $lines[] = 'В том числе доставка: ' . $deliveryPrice . ' RUB';
+    }
+
+    return implode("\n", array_merge($lines, [
+        'Статус: Оплачен',
+        '',
+        'Посмотреть мои заказы: ' . $myOrdersUrl,
+    ]));
+}
+
+function build_customer_payment_email_html(array $order, string $myOrdersUrl): string
+{
+    $deliveryPrice = trim((string) ($order['delivery_price'] ?? ''));
+    $deliveryRow = $deliveryPrice === ''
+        ? ''
+        : '<p><strong>В том числе доставка:</strong> ' . e($deliveryPrice) . ' RUB</p>';
+
+    return '<!doctype html><html><body style="font-family:Arial,sans-serif;color:#1a1a1a;">'
+        . '<h1>Заказ №' . e(order_field($order, 'public_number')) . ' успешно оплачен</h1>'
+        . '<p><strong>Номер заказа:</strong> ' . e(order_field($order, 'public_number')) . '</p>'
+        . '<p><strong>Сумма:</strong> ' . e(order_field($order, 'amount')) . ' RUB</p>'
+        . $deliveryRow
+        . '<p><strong>Статус:</strong> Оплачен</p>'
+        . '<p><a href="' . e($myOrdersUrl) . '" style="display:inline-block;padding:14px 20px;border-radius:12px;background:#ffc533;color:#1a1a1a;text-decoration:none;font-weight:700;">Посмотреть мои заказы</a></p>'
+        . '<p style="color:#666;font-size:13px;">Для доступа запросите одноразовую ссылку на email. Постоянный токен в этом письме не используется.</p>'
+        . '</body></html>';
+}
+
+function build_magic_link_email_plain(string $magicLinkUrl, int $ttlMinutes): string
+{
+    return implode("\n", [
+        'Вход в раздел «Мои заказы» PETLIO',
+        '',
+        'Откройте одноразовую ссылку:',
+        $magicLinkUrl,
+        '',
+        'Ссылка действует ' . $ttlMinutes . ' минут и сработает только один раз.',
+        'Если вы не запрашивали ссылку, просто проигнорируйте письмо.',
+    ]);
+}
+
+function build_magic_link_email_html(string $magicLinkUrl, int $ttlMinutes): string
+{
+    return '<!doctype html><html><body style="font-family:Arial,sans-serif;color:#1a1a1a;">'
+        . '<h1>Вход в раздел «Мои заказы»</h1>'
+        . '<p>Ссылка действует ' . e((string) $ttlMinutes) . ' минут и сработает только один раз.</p>'
+        . '<p><a href="' . e($magicLinkUrl) . '" style="display:inline-block;padding:14px 20px;border-radius:12px;background:#ffc533;color:#1a1a1a;text-decoration:none;font-weight:700;">Открыть мои заказы</a></p>'
+        . '<p style="color:#666;font-size:13px;">Если вы не запрашивали ссылку, просто проигнорируйте письмо.</p>'
+        . '</body></html>';
+}
+
+function send_petlio_email(
+    string $recipient,
+    string $subject,
+    string $htmlBody,
+    string $plainBody,
+    ?array $attachment = null
+): void {
     if (!class_exists(PHPMailer::class)) {
         throw new RuntimeException('PHPMailer is not installed. Run composer install.');
+    }
+
+    if (filter_var($recipient, FILTER_VALIDATE_EMAIL) === false) {
+        throw new RuntimeException('Email recipient is invalid.');
     }
 
     $config = require __DIR__ . '/config.php';
@@ -149,20 +216,68 @@ function send_order_email(array $order): void
         $mail->CharSet = 'UTF-8';
 
         $mail->setFrom($smtp['from'], $smtp['from_name']);
-        $mail->addAddress($config['order_email']);
-        $mail->Subject = 'Новый оплаченный заказ PETLIO #' . order_field($order, 'order_uid');
+        $mail->addAddress($recipient);
+        $mail->Subject = $subject;
         $mail->isHTML(true);
-        $mail->Body = build_order_email_html($order);
-        $mail->AltBody = build_order_email_plain($order);
+        $mail->Body = $htmlBody;
+        $mail->AltBody = $plainBody;
 
-        $photoPath = order_photo_absolute_path($order);
-
-        if ($photoPath !== null) {
-            $mail->addAttachment($photoPath, 'pet-photo-order-' . order_field($order, 'id') . '.' . pathinfo($photoPath, PATHINFO_EXTENSION));
+        if ($attachment !== null && is_file((string) ($attachment['path'] ?? ''))) {
+            $mail->addAttachment(
+                (string) $attachment['path'],
+                (string) ($attachment['name'] ?? basename((string) $attachment['path']))
+            );
         }
 
         $mail->send();
     } catch (MailException $error) {
         throw new RuntimeException('Failed to send order email: ' . $error->getMessage(), 0, $error);
     }
+}
+
+function send_order_email(array $order): void
+{
+    $config = require __DIR__ . '/config.php';
+    $photoPath = order_photo_absolute_path($order);
+    $attachment = null;
+
+    if ($photoPath !== null) {
+        $attachment = [
+            'path' => $photoPath,
+            'name' => 'pet-photo-order-' . order_field($order, 'public_number') . '.' . pathinfo($photoPath, PATHINFO_EXTENSION),
+        ];
+    }
+
+    send_petlio_email(
+        (string) $config['order_email'],
+        'Новый оплаченный заказ PETLIO #' . order_field($order, 'public_number'),
+        build_order_email_html($order),
+        build_order_email_plain($order),
+        $attachment
+    );
+}
+
+function send_customer_payment_email(array $order): void
+{
+    $config = require __DIR__ . '/config.php';
+    $myOrdersUrl = rtrim((string) $config['app_url'], '/') . '/my-orders/';
+
+    send_petlio_email(
+        order_field($order, 'customer_email'),
+        'Заказ №' . order_field($order, 'public_number') . ' успешно оплачен',
+        build_customer_payment_email_html($order, $myOrdersUrl),
+        build_customer_payment_email_plain($order, $myOrdersUrl)
+    );
+}
+
+function send_magic_link_email(string $email, string $magicLinkUrl, int $ttlSeconds): void
+{
+    $ttlMinutes = max(1, (int) ceil($ttlSeconds / 60));
+
+    send_petlio_email(
+        $email,
+        'Вход в раздел «Мои заказы» PETLIO',
+        build_magic_link_email_html($magicLinkUrl, $ttlMinutes),
+        build_magic_link_email_plain($magicLinkUrl, $ttlMinutes)
+    );
 }
