@@ -125,18 +125,25 @@ function my_orders_public_number(array $order): string
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <title>Мои заказы | PETLIO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Neucha&family=PT+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/order.css">
   <link rel="stylesheet" href="../css/my-orders.css">
+  <link rel="stylesheet" href="../css/site-header.css">
+  <link rel="stylesheet" href="../css/site-footer.css">
 </head>
-<body>
+<body class="<?= $authenticatedEmail === null ? 'my-orders-guest' : 'my-orders-authenticated' ?>">
   <header class="site-header">
     <div class="header-container">
       <a class="logo" href="../index.html" aria-label="PETLIO">
         <img src="../assets/images/logo.png" alt="PETLIO">
       </a>
       <nav class="main-nav" aria-label="Главное меню">
-        <a href="../index.html">Главная</a>
+        <a href="../index.html#home">Главная</a>
+        <a href="../index.html#sizes">Размеры</a>
         <a href="../create.html#constructor">Конструктор</a>
+        <a href="../create.html#constructor">Заказать</a>
         <a href="/my-orders/" aria-current="page">Мои заказы</a>
         <a href="../privacy.html">Политика</a>
       </nav>
@@ -146,9 +153,13 @@ function my_orders_public_number(array $order): string
   <main class="order-page my-orders-page">
     <section class="order-hero my-orders-hero" aria-labelledby="my-orders-title">
       <div>
-        <p class="order-eyebrow">Без регистрации и пароля</p>
+        <?php if ($authenticatedEmail !== null): ?>
+          <p class="order-eyebrow">Без регистрации и пароля</p>
+        <?php endif; ?>
         <h1 id="my-orders-title">Мои заказы</h1>
-        <p class="order-copy">Доступ защищён одноразовой ссылкой, которую мы отправляем на email из заказа.</p>
+        <?php if ($authenticatedEmail !== null): ?>
+          <p class="order-copy">Доступ защищён одноразовой ссылкой, которую мы отправляем на email из заказа.</p>
+        <?php endif; ?>
       </div>
       <?php if ($authenticatedEmail !== null): ?>
         <form method="post" action="/my-orders/" class="my-orders-logout">
@@ -166,7 +177,6 @@ function my_orders_public_number(array $order): string
     <?php if ($authenticatedEmail === null): ?>
       <section class="order-card my-orders-login" aria-labelledby="magic-link-title">
         <h2 id="magic-link-title">Получить ссылку для входа</h2>
-        <p>Введите email, указанный при оформлении заказа.</p>
 
         <?php if ($neutralMessage !== null): ?>
           <p class="order-notice my-orders-neutral" role="status"><?= my_orders_h($neutralMessage) ?></p>
@@ -176,8 +186,9 @@ function my_orders_public_number(array $order): string
           <input type="hidden" name="csrf_token" value="<?= my_orders_h($csrfToken) ?>">
           <input type="hidden" name="action" value="request_link">
           <label class="order-field">
-            <span>Электронная почта</span>
-            <input name="email" type="email" maxlength="254" autocomplete="email" required>
+            <span class="my-orders-visually-hidden">Электронная почта</span>
+            <input name="email" type="email" maxlength="254" autocomplete="email" placeholder="E-MAIL" required>
+            <small>Укажите адрес электронной почты, использованный при оформлении заказа.</small>
           </label>
           <button class="order-submit" type="submit">
             <span>Отправить ссылку</span>
@@ -185,6 +196,11 @@ function my_orders_public_number(array $order): string
           </button>
         </form>
       </section>
+      <p class="my-orders-explanation">
+        Доступ к информации о заказах предоставляется без регистрации и использования пароля. Для обеспечения
+        безопасности вход осуществляется по защищённой одноразовой ссылке, отправляемой на адрес электронной
+        почты, указанный при оформлении заказа.
+      </p>
     <?php else: ?>
       <section class="my-orders-list" aria-label="Список заказов">
         <?php if ($orders === [] && $pageError === null): ?>
@@ -276,17 +292,68 @@ function my_orders_public_number(array $order): string
       </section>
     <?php endif; ?>
 
+    <aside class="my-orders-support" aria-label="Поддержка">
+      Если при входе или просмотре заказов возникли сложности, напишите нам на
+      <a href="mailto:<?= my_orders_h($supportEmail) ?>"><?= my_orders_h($supportEmail) ?></a>
+      — мы обязательно поможем разобраться.
+    </aside>
+
+    <?php if ($authenticatedEmail !== null): ?>
     <section class="order-card my-orders-help" aria-labelledby="my-orders-help-title">
       <h2 id="my-orders-help-title">Отслеживание и помощь</h2>
       <p>
         После передачи заказа в доставку статус отправления можно отслеживать
         на сайте выбранной службы доставки, если она предоставила трек-номер.
       </p>
-      <p>
-        Если у вас возникли вопросы по заказу, напишите в поддержку:
-        <a href="mailto:<?= my_orders_h($supportEmail) ?>"><?= my_orders_h($supportEmail) ?></a>.
-      </p>
     </section>
+    <?php endif; ?>
   </main>
+
+  <footer class="footer">
+    <div class="footer__box">
+      <img src="../assets/images/footer_dog.png" alt="Собака" class="footer__dog">
+
+      <div class="footer__cta">
+        <h2>
+          ПОДАРИ СВОЕМУ ПИТОМЦУ<br>
+          ЗАЩИТУ УЖЕ СЕГОДНЯ
+          <svg class="footer__heart" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20.4 4.7 13.7a4.9 4.9 0 0 1 6.92-6.92L12 7.15l.38-.37a4.9 4.9 0 0 1 6.92 6.92Z"></path>
+          </svg>
+        </h2>
+
+        <div class="footer__action">
+          <a class="footer__button" href="../create.html">
+            <span>Создать адресник</span>
+            <img src="../assets/icons/paw.svg" alt="">
+          </a>
+          <img class="footer__arrow" src="../assets/images/arrow1.png" alt="">
+        </div>
+      </div>
+
+      <div class="footer__features">
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="../assets/icons/f1.png" alt=""></span>
+          <p>Доставка<br>по всей России</p>
+        </div>
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="../assets/icons/f2.png" alt=""></span>
+          <p>Индивидуальный<br>дизайн</p>
+        </div>
+        <div class="footer__feature">
+          <span class="footer__icon"><img src="../assets/icons/f3.png" alt=""></span>
+          <p>Гарантия<br>качества</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__copyright">
+      <span>© 2026 Petfolio. Все права защищены.</span>
+      <a href="mailto:<?= my_orders_h($supportEmail) ?>">Обратная связь: <?= my_orders_h($supportEmail) ?></a>
+      <a href="../privacy.html">Политика конфиденциальности</a>
+      <a href="../assets/oferta_166112894573%202.docx" download>Оферта</a>
+      <img src="../assets/icons/paw.svg" alt="">
+    </div>
+  </footer>
 </body>
 </html>

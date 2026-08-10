@@ -1,0 +1,64 @@
+services:
+  app:
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8081}:80"
+    environment:
+      APP_URL: "${APP_URL:-http://localhost:8081}"
+      APP_KEY: "${APP_KEY:-petlio-local-development-key-change-me}"
+      SESSION_COOKIE_SECURE: "${SESSION_COOKIE_SECURE:-false}"
+      MY_ORDERS_SESSION_LIFETIME: "${MY_ORDERS_SESSION_LIFETIME:-43200}"
+      MAGIC_LINK_TTL_SECONDS: "${MAGIC_LINK_TTL_SECONDS:-1800}"
+      MAGIC_LINK_REQUEST_LIMIT: "${MAGIC_LINK_REQUEST_LIMIT:-5}"
+      MAGIC_LINK_REQUEST_WINDOW_SECONDS: "${MAGIC_LINK_REQUEST_WINDOW_SECONDS:-900}"
+      PET_PHOTO_STORAGE_PATH: /var/lib/petlio/order-photos
+      DB_HOST: db
+      DB_NAME: "${DB_NAME:-petlio}"
+      DB_USER: "${DB_USER:-petlio_user}"
+      DB_PASS: "${DB_PASS:-petlio_local_password}"
+      ROBOKASSA_MERCHANT_LOGIN: "${ROBOKASSA_MERCHANT_LOGIN:-Petfolio.ru}"
+      ROBOKASSA_PASSWORD1: "${ROBOKASSA_PASSWORD1:-}"
+      ROBOKASSA_PASSWORD2: "${ROBOKASSA_PASSWORD2:-}"
+      ROBOKASSA_PASSWORD3: "${ROBOKASSA_PASSWORD3:-}"
+      ROBOKASSA_TEST_PASSWORD1: "${ROBOKASSA_TEST_PASSWORD1:-}"
+      ROBOKASSA_TEST_PASSWORD2: "${ROBOKASSA_TEST_PASSWORD2:-}"
+      ROBOKASSA_TEST: "${ROBOKASSA_TEST:-true}"
+      ROBOKASSA_HASH_ALGORITHM: "${ROBOKASSA_HASH_ALGORITHM:-md5}"
+      ROBOKASSA_RECEIPT_ENABLED: "${ROBOKASSA_RECEIPT_ENABLED:-false}"
+      ORDER_EMAIL: "${ORDER_EMAIL:-ppetfoli@mail.ru}"
+      SUPPORT_EMAIL: "${SUPPORT_EMAIL:-Ppetfolio@mail.ru}"
+      SMTP_HOST: "${SMTP_HOST:-smtp.example.ru}"
+      SMTP_PORT: "${SMTP_PORT:-465}"
+      SMTP_USER: "${SMTP_USER:-orders@example.ru}"
+      SMTP_PASS: "${SMTP_PASS:-}"
+      SMTP_FROM: "${SMTP_FROM:-orders@example.ru}"
+      SMTP_FROM_NAME: "${SMTP_FROM_NAME:-PETLIO}"
+    volumes:
+      - pet_photos:/var/lib/petlio/order-photos
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_NAME:-petlio}"
+      MYSQL_USER: "${DB_USER:-petlio_user}"
+      MYSQL_PASSWORD: "${DB_PASS:-petlio_local_password}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASS:-petlio_local_root_password}"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+volumes:
+  db_data:
+  pet_photos:

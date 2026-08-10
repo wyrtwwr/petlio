@@ -1,0 +1,10 @@
+.git
+.agents
+.tmp-*
+.env
+vendor
+node_modules
+Dockerfile*
+compose*.yaml
+compose*.yml
+README.md
