@@ -1,3 +1,2 @@
-2026/07/01-14:20:53.698 49d0 Reusing MANIFEST C:\Users\prudn\Documents\GitHub\petlio\.tmp-edge-profile\Default\Session Storage/MANIFEST-000001
-2026/07/01-14:20:53.701 49d0 Recovering log #3
-2026/07/01-14:20:53.712 49d0 Reusing old log C:\Users\prudn\Documents\GitHub\petlio\.tmp-edge-profile\Default\Session Storage/000003.log 
+2026/07/30-13:28:03.244 6dd8 Creating DB C:\Users\prudn\Documents\GitHub\petlio\.tmp-edge-profile\Default\Session Storage since it was missing.
+2026/07/30-13:28:03.279 6dd8 Reusing MANIFEST C:\Users\prudn\Documents\GitHub\petlio\.tmp-edge-profile\Default\Session Storage/MANIFEST-000001
