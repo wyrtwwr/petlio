@@ -11,6 +11,11 @@ const PETLIO_SIZE_PRICES = [
     'medium' => ['key' => 'medium', 'title' => 'Средний', 'value' => '4 x 2,5 см', 'amount' => '1299.00'],
     'large' => ['key' => 'large', 'title' => 'Большой', 'value' => '5 x 3 см', 'amount' => '1399.00'],
 ];
+const PETLIO_ORDER_DESIGNS = [
+    'classic' => ['key' => 'classic', 'title' => 'Паспорт питомца'],
+    'petfolio' => ['key' => 'petfolio', 'title' => 'Пэтфолио'],
+    'pet-id' => ['key' => 'pet-id', 'title' => 'Идентификация питомца'],
+];
 const PETLIO_DELIVERY_AMOUNT = '200.00';
 
 const PETLIO_ORDER_STATUS_LABELS = [
@@ -160,6 +165,23 @@ function normalize_optional_order_photo(array $payload, string $key): ?array
     return normalize_order_photo($normalizedPayload);
 }
 
+function normalize_order_design(array $payload): array
+{
+    $designKey = clean_text($payload['design']['key'] ?? '', 32);
+
+    // Old clients created before the design picker existed are treated as the
+    // original classic design. Any explicitly supplied unknown key is rejected.
+    if ($designKey === '') {
+        return PETLIO_ORDER_DESIGNS['classic'];
+    }
+
+    if (!isset(PETLIO_ORDER_DESIGNS[$designKey])) {
+        throw new ApiRequestException('Выберите корректный вариант дизайна.', 422);
+    }
+
+    return PETLIO_ORDER_DESIGNS[$designKey];
+}
+
 function sanitize_order_payload(array $payload): array
 {
     require_valid_address_tag_payload($payload);
@@ -174,13 +196,25 @@ function sanitize_order_payload(array $payload): array
         );
     }
 
+    $design = normalize_order_design($payload);
     $petName = order_value($payload, 'pet', 'name', 100);
     $petBirthday = order_value($payload, 'pet', 'birthday', 50);
     $petBreed = order_value($payload, 'pet', 'breed', 100);
     $petAddress = order_value($payload, 'pet', 'address', 255);
     $petPhone = order_value($payload, 'pet', 'phone', 50);
     $photo = normalize_order_photo($payload);
-    $secondaryPhoto = normalize_optional_order_photo($payload, 'secondaryPhoto');
+    $secondaryPhotoInput = trim((string) ($payload['pet']['secondaryPhoto'] ?? ''));
+
+    if ($design['key'] !== 'pet-id' && $secondaryPhotoInput !== '') {
+        throw new ApiRequestException(
+            'Второе фото доступно только для дизайна «Идентификация питомца».',
+            422
+        );
+    }
+
+    $secondaryPhoto = $design['key'] === 'pet-id'
+        ? normalize_optional_order_photo($payload, 'secondaryPhoto')
+        : null;
 
     $customerName = order_value($payload, 'customer', 'name', 150);
     $customerAddress = order_value($payload, 'customer', 'address', 2000);
@@ -237,6 +271,9 @@ function sanitize_order_payload(array $payload): array
         'delivery_amount' => PETLIO_DELIVERY_AMOUNT,
         'total_amount' => $totalAmount,
     ];
+    // Never trust a browser-provided title in order notifications. Persist the
+    // canonical server-side key and title in raw_payload for the paid-order email.
+    $rawPayload['design'] = $design;
 
     $orderUid = create_order_uid();
 

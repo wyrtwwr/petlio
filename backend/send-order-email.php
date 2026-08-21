@@ -34,14 +34,37 @@ function order_secondary_photo_absolute_path(array $order): ?string
     return resolve_order_photo_absolute_path($order['pet_secondary_photo_path'] ?? null);
 }
 
+function order_email_attachments(array $order): array
+{
+    $attachments = [];
+    $photoPath = order_photo_absolute_path($order);
+    $secondaryPhotoPath = order_secondary_photo_absolute_path($order);
+
+    if ($photoPath !== null) {
+        $attachments[] = [
+            'path' => $photoPath,
+            'name' => 'pet-photo-order-' . order_field($order, 'public_number') . '.' . pathinfo($photoPath, PATHINFO_EXTENSION),
+        ];
+    }
+
+    if ($secondaryPhotoPath !== null) {
+        $attachments[] = [
+            'path' => $secondaryPhotoPath,
+            'name' => 'pet-photo-secondary-order-' . order_field($order, 'public_number') . '.' . pathinfo($secondaryPhotoPath, PATHINFO_EXTENSION),
+        ];
+    }
+
+    return $attachments;
+}
+
 function order_design_title(array $order): string
 {
     $payload = json_decode((string) ($order['raw_payload'] ?? ''), true);
     $designKey = is_array($payload) ? trim((string) ($payload['design']['key'] ?? '')) : '';
     $designTitles = [
-        'classic' => 'Паспорт питомца',
-        'petfolio' => 'Пэтфолио',
-        'pet-id' => 'Идентификация питомца',
+        'classic' => 'Вариант 1 — Паспорт питомца',
+        'petfolio' => 'Вариант 2 — Пэтфолио',
+        'pet-id' => 'Вариант 3 — Идентификация питомца',
     ];
 
     return $designTitles[$designKey] ?? $designTitles['classic'];
@@ -236,7 +259,7 @@ function send_petlio_email(
     string $subject,
     string $htmlBody,
     string $plainBody,
-    ?array $attachment = null
+    array $attachments = []
 ): void {
     if (!class_exists(PHPMailer::class)) {
         throw new RuntimeException('PHPMailer is not installed. Run composer install.');
@@ -274,10 +297,6 @@ function send_petlio_email(
         $mail->Body = $htmlBody;
         $mail->AltBody = $plainBody;
 
-        $attachments = $attachment === null
-            ? []
-            : (isset($attachment['path']) ? [$attachment] : $attachment);
-
         foreach ($attachments as $item) {
             if (!is_array($item) || !is_file((string) ($item['path'] ?? ''))) {
                 continue;
@@ -298,30 +317,13 @@ function send_petlio_email(
 function send_order_email(array $order): void
 {
     $config = require __DIR__ . '/config.php';
-    $photoPath = order_photo_absolute_path($order);
-    $secondaryPhotoPath = order_secondary_photo_absolute_path($order);
-    $attachments = [];
-
-    if ($photoPath !== null) {
-        $attachments[] = [
-            'path' => $photoPath,
-            'name' => 'pet-photo-order-' . order_field($order, 'public_number') . '.' . pathinfo($photoPath, PATHINFO_EXTENSION),
-        ];
-    }
-
-    if ($secondaryPhotoPath !== null) {
-        $attachments[] = [
-            'path' => $secondaryPhotoPath,
-            'name' => 'pet-photo-secondary-order-' . order_field($order, 'public_number') . '.' . pathinfo($secondaryPhotoPath, PATHINFO_EXTENSION),
-        ];
-    }
 
     send_petlio_email(
         (string) $config['order_email'],
         'Новый оплаченный заказ PETLIO #' . order_field($order, 'public_number'),
         build_order_email_html($order),
         build_order_email_plain($order),
-        $attachments
+        order_email_attachments($order)
     );
 }
 

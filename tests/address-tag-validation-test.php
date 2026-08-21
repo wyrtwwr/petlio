@@ -181,6 +181,70 @@ validation_test('sanitizes and maps all required address tag fields', function (
     unset($_SERVER['HTTP_IDEMPOTENCY_KEY']);
 });
 
+validation_test('normalizes the three supported design variants for notifications', function (): void {
+    $expectedDesigns = [
+        'classic' => ['title' => 'Паспорт питомца', 'email' => 'Вариант 1 — Паспорт питомца'],
+        'petfolio' => ['title' => 'Пэтфолио', 'email' => 'Вариант 2 — Пэтфолио'],
+        'pet-id' => ['title' => 'Идентификация питомца', 'email' => 'Вариант 3 — Идентификация питомца'],
+    ];
+
+    foreach ($expectedDesigns as $key => $expected) {
+        $_SERVER['HTTP_IDEMPOTENCY_KEY'] = 'design-test-' . str_replace('-', '_', $key) . '-0001';
+        $payload = valid_order_payload();
+        $payload['design'] = ['key' => $key, 'title' => 'Недоверенное название'];
+        $order = sanitize_order_payload($payload);
+        $storedPayload = json_decode((string) $order['raw_payload'], true);
+
+        validation_assert_same($key, $storedPayload['design']['key'] ?? null);
+        validation_assert_same($expected['title'], $storedPayload['design']['title'] ?? null);
+        validation_assert_same($expected['email'], order_design_title($order));
+        validation_assert_same(
+            true,
+            str_contains(build_order_email_plain($order), 'Дизайн: ' . $expected['email'])
+        );
+        validation_assert_same(true, str_contains(build_order_email_html($order), $expected['email']));
+    }
+
+    unset($_SERVER['HTTP_IDEMPOTENCY_KEY']);
+});
+
+validation_test('rejects an unknown design variant', function (): void {
+    $_SERVER['HTTP_IDEMPOTENCY_KEY'] = 'design-test-unknown-0001';
+    $payload = valid_order_payload();
+    $payload['design'] = ['key' => 'unknown-design'];
+
+    try {
+        validation_assert_api_error(422, function () use ($payload): void {
+            sanitize_order_payload($payload);
+        });
+    } finally {
+        unset($_SERVER['HTTP_IDEMPOTENCY_KEY']);
+    }
+});
+
+validation_test('accepts a second photo only for the third design', function (): void {
+    $_SERVER['HTTP_IDEMPOTENCY_KEY'] = 'design-test-secondary-0001';
+    $payload = valid_order_payload();
+    $payload['design'] = ['key' => 'pet-id'];
+    $payload['pet']['secondaryPhoto'] = $payload['pet']['photo'];
+    $order = sanitize_order_payload($payload);
+    $storedPayload = json_decode((string) $order['raw_payload'], true);
+
+    validation_assert_same('png', $order['_secondary_photo']['extension'] ?? null);
+    validation_assert_same('[secondary photo omitted]', $storedPayload['pet']['secondaryPhoto'] ?? null);
+
+    $payload['design'] = ['key' => 'classic'];
+    $_SERVER['HTTP_IDEMPOTENCY_KEY'] = 'design-test-secondary-0002';
+
+    try {
+        validation_assert_api_error(422, function () use ($payload): void {
+            sanitize_order_payload($payload);
+        });
+    } finally {
+        unset($_SERVER['HTTP_IDEMPOTENCY_KEY']);
+    }
+});
+
 validation_test('adds the fixed delivery price to every product size', function (): void {
     validation_assert_same('1299.00', order_amount_with_delivery('1099.00'));
     validation_assert_same('1499.00', order_amount_with_delivery('1299.00'));
@@ -252,9 +316,17 @@ validation_test('unique checkout request prevents duplicate orders', function ()
     );
 
     $_SERVER['HTTP_IDEMPOTENCY_KEY'] = 'address-tag-test-request-duplicate';
-    $firstOrder = sanitize_order_payload(valid_order_payload());
+    $firstPayload = valid_order_payload();
+    $firstPayload['design'] = ['key' => 'pet-id'];
+    $firstPayload['pet']['secondaryPhoto'] = $firstPayload['pet']['photo'];
+    $firstOrder = sanitize_order_payload($firstPayload);
     $firstOrder['payment_provider'] = 'robokassa';
     $firstOrder['pet_photo_path'] = save_order_photo($firstOrder['order_uid'], $firstOrder['_photo']);
+    $firstOrder['pet_secondary_photo_path'] = save_order_photo(
+        $firstOrder['order_uid'],
+        $firstOrder['_secondary_photo'],
+        'secondary'
+    );
 
     try {
         $firstOrderId = insert_order($pdo, $firstOrder);
@@ -262,6 +334,15 @@ validation_test('unique checkout request prevents duplicate orders', function ()
         $storedOrder = find_order_by_id($pdo, $firstOrderId);
 
         require_valid_stored_address_tag($storedOrder);
+        validation_assert_same($firstOrder['pet_photo_path'], $storedOrder['pet_photo_path']);
+        validation_assert_same(
+            $firstOrder['pet_secondary_photo_path'],
+            $storedOrder['pet_secondary_photo_path']
+        );
+        $attachments = order_email_attachments($storedOrder);
+        validation_assert_same(2, count($attachments));
+        validation_assert_same(true, str_starts_with($attachments[0]['name'], 'pet-photo-order-'));
+        validation_assert_same(true, str_starts_with($attachments[1]['name'], 'pet-photo-secondary-order-'));
 
         $paymentUrl = robokassa_build_payment_url([
             'robokassa' => [
@@ -299,6 +380,7 @@ validation_test('unique checkout request prevents duplicate orders', function ()
         );
     } finally {
         delete_order_photo($firstOrder['pet_photo_path']);
+        delete_order_photo($firstOrder['pet_secondary_photo_path']);
         unset($_SERVER['HTTP_IDEMPOTENCY_KEY']);
     }
 });
