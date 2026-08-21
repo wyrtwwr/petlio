@@ -19,6 +19,7 @@ CREATE TABLE orders (
   pet_address VARCHAR(255) NOT NULL,
   pet_phone VARCHAR(50) NOT NULL,
   pet_photo_path VARCHAR(255) NOT NULL,
+  pet_secondary_photo_path VARCHAR(255) DEFAULT NULL,
 
   customer_name VARCHAR(150) NOT NULL,
   customer_address TEXT NOT NULL,

@@ -22,10 +22,14 @@ function order_photo_storage_directory(): string
     return $directory;
 }
 
-function save_order_photo(string $orderUid, array $photo): string
+function save_order_photo(string $orderUid, array $photo, string $variant = ''): string
 {
     if (preg_match('/^[a-f0-9]{32}$/', $orderUid) !== 1) {
         throw new InvalidArgumentException('Invalid order photo identifier.');
+    }
+
+    if (!in_array($variant, ['', 'secondary'], true)) {
+        throw new InvalidArgumentException('Invalid order photo variant.');
     }
 
     $extension = (string) ($photo['extension'] ?? '');
@@ -40,7 +44,7 @@ function save_order_photo(string $orderUid, array $photo): string
         throw new RuntimeException('Failed to create private order photo directory.');
     }
 
-    $fileName = $orderUid . '.' . $extension;
+    $fileName = $orderUid . ($variant !== '' ? '-' . $variant : '') . '.' . $extension;
     $absolutePath = $directory . DIRECTORY_SEPARATOR . $fileName;
 
     if (file_put_contents($absolutePath, $photo['binary'], LOCK_EX) === false) {
@@ -56,7 +60,7 @@ function resolve_order_photo_absolute_path(mixed $storedPath): ?string
 {
     $path = trim((string) $storedPath);
 
-    if (preg_match('/^private:([a-f0-9]{32}\.(?:jpg|png))$/', $path, $matches) === 1) {
+    if (preg_match('/^private:([a-f0-9]{32}(?:-secondary)?\.(?:jpg|png))$/', $path, $matches) === 1) {
         $candidate = order_photo_storage_directory() . DIRECTORY_SEPARATOR . $matches[1];
 
         return is_file($candidate) ? $candidate : null;

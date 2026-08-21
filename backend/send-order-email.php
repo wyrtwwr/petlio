@@ -29,20 +29,67 @@ function order_photo_absolute_path(array $order): ?string
     return resolve_order_photo_absolute_path($order['pet_photo_path'] ?? null);
 }
 
+function order_secondary_photo_absolute_path(array $order): ?string
+{
+    return resolve_order_photo_absolute_path($order['pet_secondary_photo_path'] ?? null);
+}
+
+function order_design_title(array $order): string
+{
+    $payload = json_decode((string) ($order['raw_payload'] ?? ''), true);
+    $designKey = is_array($payload) ? trim((string) ($payload['design']['key'] ?? '')) : '';
+    $designTitles = [
+        'classic' => 'Паспорт питомца',
+        'petfolio' => 'Пэтфолио',
+        'pet-id' => 'Идентификация питомца',
+    ];
+
+    return $designTitles[$designKey] ?? $designTitles['classic'];
+}
+
+function order_pet_gender(array $order): string
+{
+    $payload = json_decode((string) ($order['raw_payload'] ?? ''), true);
+    $gender = is_array($payload) ? trim((string) ($payload['pet']['gender'] ?? '')) : '';
+
+    if ($gender === '') {
+        return 'Не указан';
+    }
+
+    return function_exists('mb_substr') ? mb_substr($gender, 0, 20) : substr($gender, 0, 40);
+}
+
+function order_pet_design_detail(array $order, string $key, int $maxBytes = 80): string
+{
+    $payload = json_decode((string) ($order['raw_payload'] ?? ''), true);
+    $value = is_array($payload) ? trim((string) ($payload['pet'][$key] ?? '')) : '';
+
+    if ($value === '') {
+        return 'Не указан';
+    }
+
+    return function_exists('mb_strcut') ? mb_strcut($value, 0, $maxBytes) : substr($value, 0, $maxBytes);
+}
+
 function build_order_email_plain(array $order): string
 {
     return implode("\n", [
         'Новый оплаченный заказ PETLIO #' . order_field($order, 'public_number'),
         '',
         'Ваш адресник',
+        'Дизайн: ' . order_design_title($order),
         'Размер: ' . order_field($order, 'size_title') . ', ' . order_field($order, 'size_value'),
         'Цена: ' . order_field($order, 'size_price'),
         'Имя питомца: ' . order_field($order, 'pet_name'),
         'Дата рождения: ' . order_field($order, 'pet_birthday'),
         'Порода: ' . order_field($order, 'pet_breed'),
+        'Пол: ' . order_pet_gender($order),
+        'Цвет глаз: ' . order_pet_design_detail($order, 'eyeColor'),
+        'Цвет шерсти: ' . order_pet_design_detail($order, 'furColor'),
         'Место жительства: ' . order_field($order, 'pet_address'),
         'Телефон на адреснике: ' . order_field($order, 'pet_phone'),
         'Фото питомца: ' . (order_photo_absolute_path($order) ? 'во вложении' : 'не найдено'),
+        'Второе фото: ' . (order_secondary_photo_absolute_path($order) ? 'во вложении' : 'не загружено'),
         '',
         'Данные получателя',
         'ФИО: ' . order_field($order, 'customer_name'),
@@ -69,14 +116,19 @@ function build_order_email_html(array $order): string
 {
     $rows = [
         'Ваш адресник' => [
+            'Дизайн' => order_design_title($order),
             'Размер' => order_field($order, 'size_title') . ', ' . order_field($order, 'size_value'),
             'Цена' => order_field($order, 'size_price'),
             'Имя питомца' => order_field($order, 'pet_name'),
             'Дата рождения' => order_field($order, 'pet_birthday'),
             'Порода' => order_field($order, 'pet_breed'),
+            'Пол' => order_pet_gender($order),
+            'Цвет глаз' => order_pet_design_detail($order, 'eyeColor'),
+            'Цвет шерсти' => order_pet_design_detail($order, 'furColor'),
             'Место жительства' => order_field($order, 'pet_address'),
             'Телефон на адреснике' => order_field($order, 'pet_phone'),
             'Фото питомца' => order_photo_absolute_path($order) ? 'во вложении' : 'не найдено',
+            'Второе фото' => order_secondary_photo_absolute_path($order) ? 'во вложении' : 'не загружено',
         ],
         'Данные получателя' => [
             'ФИО' => order_field($order, 'customer_name'),
@@ -222,10 +274,18 @@ function send_petlio_email(
         $mail->Body = $htmlBody;
         $mail->AltBody = $plainBody;
 
-        if ($attachment !== null && is_file((string) ($attachment['path'] ?? ''))) {
+        $attachments = $attachment === null
+            ? []
+            : (isset($attachment['path']) ? [$attachment] : $attachment);
+
+        foreach ($attachments as $item) {
+            if (!is_array($item) || !is_file((string) ($item['path'] ?? ''))) {
+                continue;
+            }
+
             $mail->addAttachment(
-                (string) $attachment['path'],
-                (string) ($attachment['name'] ?? basename((string) $attachment['path']))
+                (string) $item['path'],
+                (string) ($item['name'] ?? basename((string) $item['path']))
             );
         }
 
@@ -239,12 +299,20 @@ function send_order_email(array $order): void
 {
     $config = require __DIR__ . '/config.php';
     $photoPath = order_photo_absolute_path($order);
-    $attachment = null;
+    $secondaryPhotoPath = order_secondary_photo_absolute_path($order);
+    $attachments = [];
 
     if ($photoPath !== null) {
-        $attachment = [
+        $attachments[] = [
             'path' => $photoPath,
             'name' => 'pet-photo-order-' . order_field($order, 'public_number') . '.' . pathinfo($photoPath, PATHINFO_EXTENSION),
+        ];
+    }
+
+    if ($secondaryPhotoPath !== null) {
+        $attachments[] = [
+            'path' => $secondaryPhotoPath,
+            'name' => 'pet-photo-secondary-order-' . order_field($order, 'public_number') . '.' . pathinfo($secondaryPhotoPath, PATHINFO_EXTENSION),
         ];
     }
 
@@ -253,7 +321,7 @@ function send_order_email(array $order): void
         'Новый оплаченный заказ PETLIO #' . order_field($order, 'public_number'),
         build_order_email_html($order),
         build_order_email_plain($order),
-        $attachment
+        $attachments
     );
 }
 

@@ -150,11 +150,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const summaryPhoto = document.querySelector('#summary-photo');
     const summaryPetPhoto = document.querySelector('#summary-pet-photo');
     const hasPhoto = validation.isUploadedPhoto(pet.photo);
+    const designKey = typeof orderData.design?.key === 'string' ? orderData.design.key : 'classic';
+
+    document.querySelectorAll('[data-design-summary]').forEach((row) => {
+      row.hidden = row.dataset.designSummary !== designKey;
+    });
 
     setSummaryValue('#summary-size', sizeParts.join(', '), 'Не указано');
+    setSummaryValue('#summary-design', orderData.design?.title, 'Паспорт питомца');
     setSummaryValue('#summary-pet-name', pet.name);
     setSummaryValue('#summary-pet-birthday', pet.birthday, 'дд.мм.гггг');
     setSummaryValue('#summary-pet-breed', pet.breed);
+    setSummaryValue('#summary-pet-gender', pet.gender, 'Не указан');
+    setSummaryValue('#summary-pet-eye-color', pet.eyeColor, 'Не указан');
+    setSummaryValue('#summary-pet-fur-color', pet.furColor, 'Не указан');
     setSummaryValue('#summary-pet-address', pet.address);
     setSummaryValue('#summary-pet-phone', pet.phone, '+7 (999) 999-99-99');
 

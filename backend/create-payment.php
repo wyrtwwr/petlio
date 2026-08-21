@@ -64,11 +64,20 @@ try {
     }
 
     $savedPhotoPath = null;
+    $savedSecondaryPhotoPath = null;
     $pdo->beginTransaction();
 
     try {
         $order['pet_photo_path'] = save_order_photo($order['order_uid'], $order['_photo']);
         $savedPhotoPath = $order['pet_photo_path'];
+        if (is_array($order['_secondary_photo'] ?? null)) {
+            $order['pet_secondary_photo_path'] = save_order_photo(
+                $order['order_uid'],
+                $order['_secondary_photo'],
+                'secondary'
+            );
+            $savedSecondaryPhotoPath = $order['pet_secondary_photo_path'];
+        }
         $orderId = insert_order($pdo, $order);
 
         if ($orderId < 1) {
@@ -94,6 +103,7 @@ try {
         }
 
         delete_order_photo($savedPhotoPath);
+        delete_order_photo($savedSecondaryPhotoPath);
 
         if (
             $error instanceof PDOException

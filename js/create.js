@@ -4,8 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const photoDrop = document.querySelector('.photo-drop');
   const preview = document.querySelector('.tag-preview');
   const previewPhoto = document.querySelector('#preview-photo');
+  const secondaryPhotoInput = document.querySelector('#pet-photo-secondary');
+  const previewSecondaryPhoto = document.querySelector('#preview-photo-secondary');
   const sizePicker = document.querySelector('.size-picker');
   const sizeOptions = Array.from(document.querySelectorAll('.size-option'));
+  const designOptions = Array.from(document.querySelectorAll('.design-option'));
   const passportButton = document.querySelector('#passport-button');
   const birthdayInput = document.querySelector('#pet-birthday');
   const phoneInput = document.querySelector('#pet-phone');
@@ -21,6 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ['name', '#pet-name', '#preview-name', 'Чиж'],
     ['birthday', '#pet-birthday', '#preview-birthday', 'дд.мм.гггг'],
     ['breed', '#pet-breed', '#preview-breed', 'Пудель'],
+    ['gender', '#pet-gender', '#preview-gender', 'Муж'],
+    ['eyeColor', '#pet-eye-color', '#preview-eye-color', 'Карий'],
+    ['furColor', '#pet-fur-color', '#preview-fur-color', 'Рыже-белый'],
     ['address', '#pet-address', '#preview-address', 'г. Москва, ул. Ленина'],
     ['phone', '#pet-phone', '#preview-phone', '+7 (___) ___-__-__'],
   ];
@@ -167,6 +173,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  function getSelectedDesign() {
+    const selectedOption = document.querySelector('.design-option.is-active');
+
+    return {
+      key: selectedOption?.dataset.design || 'classic',
+      title: selectedOption?.dataset.title || 'Паспорт питомца',
+    };
+  }
+
+  function updatePreviewDesign(designKey = 'classic') {
+    const normalizedDesign = designOptions.some((option) => option.dataset.design === designKey)
+      ? designKey
+      : 'classic';
+
+    preview?.setAttribute('data-design', normalizedDesign);
+
+    document.querySelectorAll('[data-design-field]').forEach((field) => {
+      field.hidden = field.dataset.designField !== normalizedDesign;
+    });
+  }
+
   function updatePreviewSize(sizeKey = 'medium') {
     const normalizedSize = ['small', 'medium', 'large'].includes(sizeKey) ? sizeKey : 'medium';
 
@@ -188,16 +215,30 @@ document.addEventListener('DOMContentLoaded', () => {
   function collectConstructorOrder() {
     const previousOrder = readStoredOrder();
     const selectedSize = getSelectedSize();
+    const selectedDesign = getSelectedDesign();
     const orderData = {
       ...previousOrder,
       pet: {
         name: document.querySelector('#pet-name')?.value.trim() || '',
         birthday: birthdayInput?.value.trim() || '',
         breed: document.querySelector('#pet-breed')?.value.trim() || '',
+        gender: selectedDesign.key === 'petfolio'
+          ? document.querySelector('#pet-gender')?.value.trim() || ''
+          : '',
+        eyeColor: selectedDesign.key === 'pet-id'
+          ? document.querySelector('#pet-eye-color')?.value.trim() || ''
+          : '',
+        furColor: selectedDesign.key === 'pet-id'
+          ? document.querySelector('#pet-fur-color')?.value.trim() || ''
+          : '',
         address: document.querySelector('#pet-address')?.value.trim() || '',
         phone: phoneValueForStorage(),
         photo: validation.isUploadedPhoto(previewPhoto?.src) ? previewPhoto.src : '',
+        secondaryPhoto: selectedDesign.key === 'pet-id' && validation.isUploadedPhoto(previewSecondaryPhoto?.src)
+          ? previewSecondaryPhoto.src
+          : '',
       },
+      design: selectedDesign,
     };
 
     delete orderData.checkoutRequestId;
@@ -297,6 +338,28 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   }
 
+  function setSecondaryPhoto(file) {
+    if (!file || !file.type.startsWith('image/') || file.size > 10 * 1024 * 1024) {
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.addEventListener('load', () => {
+      const photo = String(reader.result || '');
+
+      if (!validation.isUploadedPhoto(photo) || !previewSecondaryPhoto) {
+        return;
+      }
+
+      previewSecondaryPhoto.src = photo;
+      preview?.classList.add('has-secondary-photo');
+      saveConstructorOrder();
+    });
+
+    reader.readAsDataURL(file);
+  }
+
   function restoreConstructorOrder() {
     const storedOrder = readStoredOrder();
     const pet = storedOrder.pet || {};
@@ -319,6 +382,11 @@ document.addEventListener('DOMContentLoaded', () => {
       preview.classList.add('has-photo');
     }
 
+    if (validation.isUploadedPhoto(pet.secondaryPhoto)) {
+      previewSecondaryPhoto.src = pet.secondaryPhoto;
+      preview.classList.add('has-secondary-photo');
+    }
+
     const storedSizeKey = validation.hasSelectedSize(storedOrder.size)
       ? storedOrder.size.key
       : '';
@@ -331,6 +399,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     updatePreviewSize(storedSizeKey || 'medium');
+
+    const requestedDesignKey = typeof storedOrder.design?.key === 'string'
+      ? storedOrder.design.key
+      : 'classic';
+    const storedDesignKey = designOptions.some((option) => option.dataset.design === requestedDesignKey)
+      ? requestedDesignKey
+      : 'classic';
+
+    designOptions.forEach((option) => {
+      const isActive = option.dataset.design === storedDesignKey;
+
+      option.classList.toggle('is-active', isActive);
+      option.setAttribute('aria-pressed', String(isActive));
+    });
+
+    updatePreviewDesign(storedDesignKey);
   }
 
   restoreConstructorOrder();
@@ -433,6 +517,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setPhoto(photoInput.files?.[0]);
   });
 
+  secondaryPhotoInput?.addEventListener('change', () => {
+    setSecondaryPhoto(secondaryPhotoInput.files?.[0]);
+  });
+
   ['dragenter', 'dragover'].forEach((eventName) => {
     photoDrop?.addEventListener(eventName, (event) => {
       event.preventDefault();
@@ -464,6 +552,20 @@ document.addEventListener('DOMContentLoaded', () => {
       updatePreviewSize(option.dataset.size);
       saveConstructorOrder();
       revalidateField('size');
+    });
+  });
+
+  designOptions.forEach((option) => {
+    option.addEventListener('click', () => {
+      designOptions.forEach((item) => {
+        const isActive = item === option;
+
+        item.classList.toggle('is-active', isActive);
+        item.setAttribute('aria-pressed', String(isActive));
+      });
+
+      updatePreviewDesign(option.dataset.design);
+      saveConstructorOrder();
     });
   });
 

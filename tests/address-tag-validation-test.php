@@ -237,6 +237,7 @@ validation_test('unique checkout request prevents duplicate orders', function ()
             pet_address TEXT,
             pet_phone TEXT,
             pet_photo_path TEXT,
+            pet_secondary_photo_path TEXT,
             customer_name TEXT,
             customer_address TEXT,
             customer_email TEXT,

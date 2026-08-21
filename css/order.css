@@ -360,6 +360,10 @@ body {
   gap: 12px;
 }
 
+.summary-list .summary-row[hidden] {
+  display: none;
+}
+
 .delivery-cost-note {
   margin: -4px 0 18px;
   padding: 14px 16px;

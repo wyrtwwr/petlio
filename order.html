@@ -83,6 +83,10 @@
 
         <dl class="summary-list">
           <div class="summary-row">
+            <dt>Дизайн</dt>
+            <dd><input id="summary-design" type="text" placeholder="Паспорт питомца" readonly></dd>
+          </div>
+          <div class="summary-row">
             <dt>Размер <b class="required-mark" aria-hidden="true">*</b></dt>
             <dd>
               <input id="summary-size" type="text" placeholder="Не указано" aria-describedby="summary-size-error" readonly>
@@ -109,6 +113,20 @@
               <input id="summary-pet-breed" data-summary-field="pet" data-summary-key="breed" data-validation-control="breed" type="text" placeholder="Не указано" aria-describedby="summary-pet-breed-error" required>
               <p class="field-error" id="summary-pet-breed-error" data-validation-error="breed" role="alert" hidden></p>
             </dd>
+          </div>
+          <div class="summary-row" data-design-summary="petfolio" hidden>
+            <dt>Пол</dt>
+            <dd>
+              <input id="summary-pet-gender" data-summary-field="pet" data-summary-key="gender" type="text" placeholder="Не указан">
+            </dd>
+          </div>
+          <div class="summary-row" data-design-summary="pet-id" hidden>
+            <dt>Цвет глаз</dt>
+            <dd><input id="summary-pet-eye-color" data-summary-field="pet" data-summary-key="eyeColor" type="text" placeholder="Не указан"></dd>
+          </div>
+          <div class="summary-row" data-design-summary="pet-id" hidden>
+            <dt>Цвет шерсти</dt>
+            <dd><input id="summary-pet-fur-color" data-summary-field="pet" data-summary-key="furColor" type="text" placeholder="Не указан"></dd>
           </div>
           <div class="summary-row">
             <dt>Место жительства <b class="required-mark" aria-hidden="true">*</b></dt>

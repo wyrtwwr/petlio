@@ -146,6 +146,20 @@ function normalize_order_photo(array $payload): array
     ];
 }
 
+function normalize_optional_order_photo(array $payload, string $key): ?array
+{
+    $photo = trim((string) ($payload['pet'][$key] ?? ''));
+
+    if ($photo === '') {
+        return null;
+    }
+
+    $normalizedPayload = $payload;
+    $normalizedPayload['pet']['photo'] = $photo;
+
+    return normalize_order_photo($normalizedPayload);
+}
+
 function sanitize_order_payload(array $payload): array
 {
     require_valid_address_tag_payload($payload);
@@ -166,6 +180,7 @@ function sanitize_order_payload(array $payload): array
     $petAddress = order_value($payload, 'pet', 'address', 255);
     $petPhone = order_value($payload, 'pet', 'phone', 50);
     $photo = normalize_order_photo($payload);
+    $secondaryPhoto = normalize_optional_order_photo($payload, 'secondaryPhoto');
 
     $customerName = order_value($payload, 'customer', 'name', 150);
     $customerAddress = order_value($payload, 'customer', 'address', 2000);
@@ -213,6 +228,10 @@ function sanitize_order_payload(array $payload): array
         $rawPayload['pet']['photo'] = '[photo omitted]';
     }
 
+    if (isset($rawPayload['pet']['secondaryPhoto'])) {
+        $rawPayload['pet']['secondaryPhoto'] = '[secondary photo omitted]';
+    }
+
     $rawPayload['pricing'] = [
         'product_amount' => $size['amount'],
         'delivery_amount' => PETLIO_DELIVERY_AMOUNT,
@@ -235,7 +254,9 @@ function sanitize_order_payload(array $payload): array
         'pet_address' => $petAddress,
         'pet_phone' => $petPhone,
         'pet_photo_path' => null,
+        'pet_secondary_photo_path' => null,
         '_photo' => $photo,
+        '_secondary_photo' => $secondaryPhoto,
         'customer_name' => $customerName,
         'customer_address' => $customerAddress,
         'customer_email' => $customerEmail,
@@ -252,13 +273,13 @@ function insert_order(PDO $pdo, array $order): int
 {
     $sql = 'INSERT INTO orders (
         order_uid, checkout_request_id, payment_status, payment_provider, size_key, size_title, size_value, size_price,
-        pet_name, pet_birthday, pet_breed, pet_address, pet_phone, pet_photo_path,
+        pet_name, pet_birthday, pet_breed, pet_address, pet_phone, pet_photo_path, pet_secondary_photo_path,
         customer_name, customer_address, customer_email,
         delivery_type, delivery_service, pickup_address, delivery_price,
         amount, raw_payload
     ) VALUES (
         :order_uid, :checkout_request_id, :payment_status, :payment_provider, :size_key, :size_title, :size_value, :size_price,
-        :pet_name, :pet_birthday, :pet_breed, :pet_address, :pet_phone, :pet_photo_path,
+        :pet_name, :pet_birthday, :pet_breed, :pet_address, :pet_phone, :pet_photo_path, :pet_secondary_photo_path,
         :customer_name, :customer_address, :customer_email,
         :delivery_type, :delivery_service, :pickup_address, :delivery_price,
         :amount, :raw_payload
@@ -280,6 +301,7 @@ function insert_order(PDO $pdo, array $order): int
         ':pet_address' => $order['pet_address'],
         ':pet_phone' => $order['pet_phone'],
         ':pet_photo_path' => $order['pet_photo_path'],
+        ':pet_secondary_photo_path' => $order['pet_secondary_photo_path'] ?? null,
         ':customer_name' => $order['customer_name'],
         ':customer_address' => $order['customer_address'],
         ':customer_email' => $order['customer_email'],
