@@ -59,7 +59,6 @@ http_response_code(400);
         <a href="../../index.html#home">Главная</a>
         <a href="../../index.html#sizes">Размеры</a>
         <a href="../../create.html#constructor">Конструктор</a>
-        <a href="../../create.html#constructor">Заказать</a>
         <a href="/my-orders/" aria-current="page">Мои заказы</a>
         <a href="../../privacy.html">Политика</a>
       </nav>

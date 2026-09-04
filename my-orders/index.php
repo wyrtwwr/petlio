@@ -143,7 +143,6 @@ function my_orders_public_number(array $order): string
         <a href="../index.html#home">Главная</a>
         <a href="../index.html#sizes">Размеры</a>
         <a href="../create.html#constructor">Конструктор</a>
-        <a href="../create.html#constructor">Заказать</a>
         <a href="/my-orders/" aria-current="page">Мои заказы</a>
         <a href="../privacy.html">Политика</a>
       </nav>

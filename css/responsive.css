@@ -196,15 +196,17 @@
 
   .btn_block1 {
     flex-direction: column;
+    flex-wrap: nowrap;
     align-items: center;
+    justify-content: center;
     gap: 14px;
   }
 
   .btn_block1 a {
     width: min(100%, 320px);
-    min-height: 54px;
-    padding: 14px 20px;
-    font-size: 15px;
+    min-height: 48px;
+    padding: 12px 14px;
+    font-size: 13px;
   }
 
   .btn_secondary {
@@ -213,12 +215,16 @@
 
   .block1_img {
     order: 1;
+    width: auto;
+    margin-top: -110px;
+    margin-left: -16px;
+    margin-right: -16px;
     justify-content: center;
   }
 
   .dog_block1 {
     width: 100%;
-    max-width: 560px;
+    max-width: none;
   }
 
   .constructor {
@@ -650,7 +656,7 @@
     grid-template-columns: 72px minmax(0, 1fr);
     gap: 18px;
     min-height: 210px;
-    padding: 22px;
+    padding: 27px 28px 0;
     border-radius: 20px;
   }
 
@@ -816,12 +822,34 @@
     padding: 0 12px 22px;
   }
 
+  .block1_img {
+    margin-left: -12px;
+    margin-right: -12px;
+  }
+
   .block1_txt p br {
     display: none;
   }
 
+  .btn_block1 {
+    gap: 10px;
+  }
+
   .btn_block1 a {
     width: min(100%, 292px);
+    min-height: 42px;
+    padding: 8px 6px;
+    font-size: 10px;
+  }
+
+  .btn_block1 .btn_primary,
+  .btn_block1 .btn_secondary {
+    gap: 4px;
+  }
+
+  .btn_block1 .paw {
+    width: 12px;
+    height: 12px;
   }
 
   .constructor {
@@ -1107,7 +1135,7 @@
     grid-template-columns: 58px minmax(0, 1fr);
     gap: 14px;
     min-height: 225px;
-    padding: 18px;
+    padding: 27px 28px 0;
   }
 
   .review-card__avatar {

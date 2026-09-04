@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const sizeCards = Array.from(document.querySelectorAll('.size-card'));
   const sectionNavLinks = Array.from(document.querySelectorAll('.main-nav a[href^="#"]'));
   const reviewsCarousel = document.querySelector('[data-reviews-carousel]');
+  const reviewPhotoModal = document.querySelector('[data-review-photo-modal]');
+  const reviewPhotoImage = reviewPhotoModal?.querySelector('[data-review-photo-image]');
+  const reviewPhotoClose = reviewPhotoModal?.querySelector('[data-review-photo-close]');
 
   function getSizeData(card) {
     if (!card) {
@@ -159,12 +162,17 @@ document.addEventListener('DOMContentLoaded', () => {
       cards.forEach((card, index) => {
         const isVisible = index >= currentIndex && index < currentIndex + visibleCount;
         const moreButton = card.querySelector('.review-card__more');
+        const photoButton = card.querySelector('.review-card__photo');
         const text = card.querySelector('.review-card__text--collapsed');
 
         card.setAttribute('aria-hidden', String(!isVisible));
 
         if (moreButton) {
           moreButton.tabIndex = isVisible ? 0 : -1;
+        }
+
+        if (photoButton) {
+          photoButton.tabIndex = isVisible ? 0 : -1;
         }
 
         if (!isVisible && moreButton && text) {
@@ -292,5 +300,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.requestAnimationFrame(syncCarouselLayout);
+  }
+
+  if (reviewPhotoModal && reviewPhotoImage) {
+    document.querySelectorAll('[data-review-photo]').forEach((button) => {
+      button.addEventListener('click', () => {
+        reviewPhotoImage.src = button.dataset.reviewPhoto || '';
+        reviewPhotoImage.alt = button.dataset.reviewPhotoAlt || 'Фотография из отзыва';
+        reviewPhotoModal.showModal();
+      });
+    });
+
+    reviewPhotoClose?.addEventListener('click', () => reviewPhotoModal.close());
+
+    reviewPhotoModal.addEventListener('click', (event) => {
+      if (event.target === reviewPhotoModal) {
+        reviewPhotoModal.close();
+      }
+    });
+
+    reviewPhotoModal.addEventListener('close', () => {
+      reviewPhotoImage.removeAttribute('src');
+      reviewPhotoImage.alt = '';
+    });
   }
 });

@@ -1,6 +1,8 @@
 .site-header {
+  position: relative;
+  z-index: 10;
   width: 100%;
-  background: #fdf8f5;
+  background: transparent;
 }
 
 .header-container {
@@ -13,7 +15,9 @@
   margin: 0 auto;
   padding: 18px 64px;
   gap: 32px;
-  background: #fdf8f5;
+  position: relative;
+  z-index: 1;
+  background: transparent;
 }
 
 .logo img {
@@ -66,11 +70,21 @@
 }
 
 @media (max-width: 768px) {
+  .site-header {
+    background: transparent;
+  }
+
   .header-container {
     flex-direction: column;
     min-height: 86px;
     padding: 14px 20px;
     gap: 12px;
+    background: rgba(253, 248, 245, 0.9);
+    border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 8px 24px rgba(45, 34, 27, 0.1);
+    -webkit-backdrop-filter: blur(10px) saturate(115%);
+    backdrop-filter: blur(10px) saturate(115%);
   }
 
   .logo img {
@@ -96,6 +110,7 @@
   .header-container {
     padding: 12px 14px;
     gap: 10px;
+    background: rgba(253, 248, 245, 0.94);
   }
 
   .logo img {
